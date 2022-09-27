@@ -1,0 +1,12 @@
+﻿  testVector.cpp
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(139,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'int *' of greater size
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(154,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'int *' of greater size
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(170,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'int *' of greater size
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(204,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'int *' of greater size
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\vector.h(232,22): warning C4244: '=': conversion from 'double' to 'size_t', possible loss of data
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\vector.h(224): message : while compiling class template member function 'custom::vector<int>::vector(size_t)'
+C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.33.31629\include\xmemory(854): message : see reference to function template instantiation 'custom::vector<int>::vector(size_t)' being compiled
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\vector.h(298): message : while compiling class template member function 'custom::vector<int>::vector(custom::vector<int> &&)'
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(370): message : see reference to function template instantiation 'custom::vector<int>::vector(custom::vector<int> &&)' being compiled
+C:\Users\hunte\Documents\cs 232\232.02.Lab.100\testVector.h(137): message : see reference to class template instantiation 'custom::vector<int>' being compiled
+  LabVector.vcxproj -> C:\Users\hunte\Documents\cs 232\232.02.Lab.100\x64\Debug\LabVector.exe
