@@ -13,7 +13,9 @@
  *    This will contain the class definition of:
  *       stack             : similar to std::stack
  * Author
- *    <your names here>
+ *    Hunter Powell
+ *    Carol Mercau
+ *    Elijah Harrison
  ************************************************************************/
 
 #pragma once
@@ -40,78 +42,62 @@ public:
    // Construct
    //
    
-   stack()                       { container.resize(7); }
-   stack(const stack <T> &  rhs) { container.resize(7); }
-   stack(      stack <T> && rhs) { container.resize(7); }
-   stack(const Container &  rhs) { container.resize(7); }
-   stack(      Container && rhs) { container.resize(7); }
-   ~stack()                      {                      }     
-   
+   stack()                       {                             }
+   stack(const stack <T> &  rhs) { *this = rhs;                }
+   stack(      stack <T> && rhs) { *this = std::move(rhs);     }
+   stack(const Container &  rhs) { container = rhs;            }
+   stack(      Container && rhs) { container = std::move(rhs); }
+   ~stack()                      {                             }
+
    //
    // Assign
    //
    stack <T> & operator = (const stack <T> & rhs)
    {
+      container = rhs.container;
       return *this;
    }
-   stack <T>& operator = (stack <T> && rhs)
+   
+   stack <T> & operator = (stack <T> && rhs)
    {
+      container = std::move(rhs.container);
       return *this;
    }
+   
    void swap(stack <T>& rhs)
    {
-
+      container.swap(rhs.container);
    }
 
    //
    // Access
    //
-   
-   T & top()       
-   { 
-      return *(new T); 
-   }
-   const T & top() const 
-   { 
-      return *(new T); 
-   }
+         T& top()       { return container.back(); }
+   const T& top() const { return container.back(); }
 
    //
    // Insert
    //
-   
-   void push(const T &  t) 
-   {  
-   
-   }
-   void push(      T && t) 
-   {  
-   
-   }
+   void push(const T&  t) { container.push_back(t); }
+   void push(      T&& t) { container.push_back(std::move(t)); }
 
    //
    // Remove
    //
-   
-   void pop() 
-   {  
-   
+   void pop()
+   {
+      container.pop_back();
    }
 
    //
    // Status
    //
-   
-   size_t size () const { return 99;   }
-   bool   empty() const { return true; }
+   size_t size()  const { return container.size(); }
+   bool   empty() const { return container.empty(); }
    
 private:
    
-   Container container;  // underlying container (probably a vector)
+   Container container; // underlying container (probably a vector)
 };
 
-
-
 } // custom namespace
-
-

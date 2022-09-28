@@ -23,15 +23,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C11AB52D25DAB470004BCD49 /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
-		C11AB52E25DAB470004BCD49 /* vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; };
-		C11AB52F25DAB470004BCD49 /* testSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
-		C11AB53025DAB470004BCD49 /* spy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; };
-		C11AB53125DAB470004BCD49 /* testVector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testVector.h; sourceTree = "<group>"; };
+		C11AB52D25DAB470004BCD49 /* unitTest.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; tabWidth = 3; };
+		C11AB52E25DAB470004BCD49 /* vector.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = vector.h; sourceTree = "<group>"; tabWidth = 3; };
+		C11AB52F25DAB470004BCD49 /* testSpy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C11AB53025DAB470004BCD49 /* spy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C11AB53125DAB470004BCD49 /* testVector.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testVector.h; sourceTree = "<group>"; tabWidth = 3; };
 		C1DBE40725601DCE003113E3 /* 115Key */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = 115Key; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1DBE41425601E3A003113E3 /* testStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testStack.cpp; sourceTree = SOURCE_ROOT; };
-		C1DBE41525601E3A003113E3 /* testStack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testStack.h; sourceTree = SOURCE_ROOT; };
-		C1DBE41625601E3A003113E3 /* stack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = SOURCE_ROOT; };
+		C1DBE41425601E3A003113E3 /* testStack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testStack.cpp; sourceTree = SOURCE_ROOT; tabWidth = 3; };
+		C1DBE41525601E3A003113E3 /* testStack.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testStack.h; sourceTree = SOURCE_ROOT; tabWidth = 3; };
+		C1DBE41625601E3A003113E3 /* stack.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; indentWidth = 3; path = stack.h; sourceTree = SOURCE_ROOT; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +101,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "115Key" */;
+			buildConfigurationList = C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "LabStack" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -263,7 +263,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "115Key" */ = {
+		C1DBE40225601DCE003113E3 /* Build configuration list for PBXProject "LabStack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C1DBE40C25601DCE003113E3 /* Debug */,

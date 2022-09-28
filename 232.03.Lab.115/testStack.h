@@ -404,7 +404,7 @@ public:
       custom::vector<Spy> vSrc;
       Spy::reset();
       // exercise
-      custom::stack<Spy, custom::vector<Spy>> sDest(vSrc);
+      custom::stack<Spy, custom::vector<Spy> > sDest(vSrc);
       // verify
       assertUnit(Spy::numAlloc() == 0);
       assertUnit(Spy::numDelete() == 0);
@@ -429,7 +429,7 @@ public:
       custom::vector<Spy> vSrc{Spy(26), Spy(49), Spy(67), Spy(89)};
       Spy::reset();
       // exercise
-      custom::stack<Spy, custom::vector<Spy>> sDest(vSrc);
+      custom::stack<Spy, custom::vector<Spy> > sDest(vSrc);
       // verify      // verify
       assertUnit(Spy::numCopy() == 4);     // create   [26,49,67,89]
       assertUnit(Spy::numAlloc() == 4);    // allocate [26,49,67,89]
@@ -468,7 +468,7 @@ public:
       std::vector<Spy> vSrc;
       Spy::reset();
       // exercise
-      custom::stack<Spy, std::vector<Spy>> sDest(vSrc);
+      custom::stack<Spy, std::vector<Spy> > sDest(vSrc);
       // verify
       assertUnit(Spy::numAlloc() == 0);
       assertUnit(Spy::numDelete() == 0);
@@ -496,7 +496,7 @@ public:
       std::vector<Spy> vSrc{ Spy(26), Spy(49), Spy(67), Spy(89) };
       Spy::reset();
       // exercise
-      custom::stack<Spy, std::vector<Spy>> sDest(vSrc);
+      custom::stack<Spy, std::vector<Spy> > sDest(vSrc);
       // verify      // verify
       assertUnit(Spy::numCopy() == 4);     // create   [26,49,67,89]
       assertUnit(Spy::numAlloc() == 4);    // allocate [26,49,67,89]
@@ -547,7 +547,7 @@ public:
       custom::vector<Spy> vSrc;
       Spy::reset();
       // exercise
-      custom::stack<Spy, custom::vector<Spy>> sDest(std::move(vSrc));
+      custom::stack<Spy, custom::vector<Spy> > sDest(std::move(vSrc));
       // verify
       assertUnit(Spy::numAlloc() == 0);
       assertUnit(Spy::numDelete() == 0);
@@ -572,7 +572,7 @@ public:
       custom::vector<Spy> vSrc{ Spy(26), Spy(49), Spy(67), Spy(89) };
       Spy::reset();
       // exercise
-      custom::stack<Spy, custom::vector<Spy>> sDest(std::move(vSrc));
+      custom::stack<Spy, custom::vector<Spy> > sDest(std::move(vSrc));
       // verify      // verify
       assertUnit(Spy::numCopy() == 0);
       assertUnit(Spy::numAlloc() == 0);
@@ -600,7 +600,7 @@ public:
       std::vector<Spy> vSrc;
       Spy::reset();
       // exercise
-      custom::stack<Spy, std::vector<Spy>> sDest(std::move(vSrc));
+      custom::stack<Spy, std::vector<Spy> > sDest(std::move(vSrc));
       // verify
       assertUnit(Spy::numAlloc() == 0);
       assertUnit(Spy::numDelete() == 0);
@@ -628,7 +628,7 @@ public:
       std::vector<Spy> vSrc{ Spy(26), Spy(49), Spy(67), Spy(89) };
       Spy::reset();
       // exercise
-      custom::stack<Spy, std::vector<Spy>> sDest(std::move(vSrc));
+      custom::stack<Spy, std::vector<Spy> > sDest(std::move(vSrc));
       // verify
       assertUnit(Spy::numCopy() == 0);
       assertUnit(Spy::numAlloc() == 0);
@@ -1338,7 +1338,7 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::stack<Spy, std::list<Spy>> s;
+      custom::stack<Spy, std::list<Spy> > s;
       s.container.push_back(Spy(26));
       s.container.push_back(Spy(49));
       s.container.push_back(Spy(67));
@@ -1455,7 +1455,7 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::stack<Spy, std::list<Spy>> s;
+      custom::stack<Spy, std::list<Spy> > s;
       s.container.push_back(Spy(26));
       s.container.push_back(Spy(49));
       s.container.push_back(Spy(67));
@@ -1506,7 +1506,7 @@ public:
     *    | 26 | 49 | 67 | 89 |
     *    +----+----+----+----+
     *************************************************************/
-   void setupStandardFixture(custom::stack<Spy>& s)
+   void setupStandardFixture(custom::stack<Spy> & s)
    {
       s.container.resize(4);
       s.container[0] = Spy(26);
@@ -1522,24 +1522,24 @@ public:
     *    |    |    |    |    |
     *    +----+----+----+----+
     *************************************************************/
-   void teardownStandardFixture(custom::stack<Spy, std::vector<Spy>>& s)
+   void teardownStandardFixture(custom::stack<Spy, std::vector<Spy> > & s)
    {
       s.container.clear();
    }
-   void teardownStandardFixture(custom::stack<Spy, custom::vector<Spy>>& s)
+   void teardownStandardFixture(custom::stack<Spy, custom::vector<Spy> > & s)
    {
       s.container.clear();
    }
    /*************************************************************
     * VERIFY EMPTY FIXTURE
     *************************************************************/
-   void assertEmptyFixtureParameters(const custom::stack<Spy, custom::vector<Spy>>& s, int line, const char* function)
+   void assertEmptyFixtureParameters(const custom::stack<Spy, custom::vector<Spy> > & s, int line, const char* function)
    {
       assertIndirect(s.container.empty());
       assertIndirect(s.container.size() == 0);
       assertIndirect(s.container.capacity() == 0);
    }
-   void assertEmptyFixtureParameters(const custom::stack<Spy, std::vector<Spy>>& s, int line, const char* function)
+   void assertEmptyFixtureParameters(const custom::stack<Spy, std::vector<Spy> > & s, int line, const char* function)
    {
       assertIndirect(s.container.empty());
       assertIndirect(s.container.size() == 0);
@@ -1553,7 +1553,7 @@ public:
     *    | 26 | 49 | 67 | 89 |
     *    +----+----+----+----+
     *************************************************************/
-   void assertStandardFixtureParameters(const custom::stack<Spy, custom::vector<Spy>>& s,
+   void assertStandardFixtureParameters(const custom::stack<Spy, custom::vector<Spy> > & s,
                                        int line, const char* function)
    {
       assertIndirect(s.container.size() == 4);
@@ -1567,7 +1567,7 @@ public:
          assertIndirect(s.container[3] == Spy(89));
       }
    }
-   void assertStandardFixtureParameters(const custom::stack<Spy, std::vector<Spy>>& s,
+   void assertStandardFixtureParameters(const custom::stack<Spy, std::vector<Spy> > & s,
                                        int line, const char* function)
    {
       assertIndirect(s.container.size() == 4);
