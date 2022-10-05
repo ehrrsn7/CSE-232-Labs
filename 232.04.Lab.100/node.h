@@ -38,15 +38,16 @@ public:
    //
    // Construct
    //
-
    Node()
    {
       pPrev = pNext = this;
    }
+
    Node(const T &  data)
    {
       pPrev = pNext = this;
    }
+
    Node(      T && data)
    {
       pPrev = pNext = this;
@@ -55,7 +56,6 @@ public:
    //
    // Member variables
    //
-
    T data;                 // user data
    Node <T> * pNext;       // pointer to next node
    Node <T> * pPrev;       // pointer to previous node
@@ -173,5 +173,3 @@ inline void clear(Node <T> * & pHead)
 {
 
 }
-
-

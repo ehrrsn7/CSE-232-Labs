@@ -33,17 +33,15 @@ template <class T>
 class Node
 {
 public:
-   //
-   // Construct
-   //
-   //
-   // Construct
-   //
 
+   //
+   // Construct
+   //
    Node() 
    { 
       pNext = pPrev = this;
    }
+
    Node(const T& data) 
    {
       pNext = pPrev = this;
@@ -57,7 +55,6 @@ public:
    //
    // Member variables
    //
-
    T data;                 // user data
    Node <T> * pNext;       // pointer to next node
    Node <T> * pPrev;       // pointer to previous node
@@ -115,7 +112,6 @@ inline Node <T> * remove(const Node <T> * pRemove)
    
    return new Node<T>;
 }
-
 
 /**********************************************
  * INSERT 
@@ -177,5 +173,3 @@ inline void clear(Node <T> * & pHead)
 {
    
 }
-
-
