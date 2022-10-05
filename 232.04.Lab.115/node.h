@@ -42,12 +42,12 @@ public:
       pNext = pPrev = this;
    }
 
-   Node(const T& data) 
+   Node(const T & data) 
    {
       pNext = pPrev = this;
    }
 
-   Node(T&& data) 
+   Node(T && data) 
    {
       pNext = pPrev = this;
    }

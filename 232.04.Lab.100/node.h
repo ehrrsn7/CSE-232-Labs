@@ -48,7 +48,7 @@ public:
       pPrev = pNext = this;
    }
 
-   Node(      T && data)
+   Node(T && data)
    {
       pPrev = pNext = this;
    }
