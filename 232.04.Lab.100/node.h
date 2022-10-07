@@ -182,7 +182,7 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
  
         // attach
         prev = tmp;
-        tmp = tmp->next;
+        tmp = tmp->pNext;
      }
  
      else
