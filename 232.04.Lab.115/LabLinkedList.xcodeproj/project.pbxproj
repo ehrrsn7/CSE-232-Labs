@@ -24,12 +24,12 @@
 
 /* Begin PBXFileReference section */
 		C16FEFBB267BD60A00A6A840 /* LabLinkedList */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LabLinkedList; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1CF5840267BD682001ABDBE /* testNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testNode.h; sourceTree = "<group>"; };
-		C1CF5841267BD682001ABDBE /* spy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; };
-		C1CF5842267BD682001ABDBE /* testNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testNode.cpp; sourceTree = "<group>"; };
-		C1CF5843267BD682001ABDBE /* unitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
-		C1CF5844267BD682001ABDBE /* testSpy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
-		C1CF5845267BD682001ABDBE /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; };
+		C1CF5840267BD682001ABDBE /* testNode.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testNode.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1CF5841267BD682001ABDBE /* spy.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1CF5842267BD682001ABDBE /* testNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testNode.cpp; sourceTree = "<group>"; tabWidth = 3; };
+		C1CF5843267BD682001ABDBE /* unitTest.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1CF5844267BD682001ABDBE /* testSpy.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1CF5845267BD682001ABDBE /* node.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = node.h; sourceTree = "<group>"; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

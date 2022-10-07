@@ -10,7 +10,6 @@
  *     _| |_  |  `--'  | |  `--'  |  / / (_)
  *    |_____|  '.____.'   '.____.'  /_/
  *
- *
  *    This will contain the class definition of:
  *        Node         : A class representing a Node
  *    Additionally, it will contain a few functions working on Node
@@ -40,17 +39,17 @@ public:
    //
    Node()
    {
-      pPrev = pNext = this;
+      pPrev = pNext = nullptr;
    }
 
    Node(const T &  data)
    {
-      pPrev = pNext = this;
+      *this = data;
    }
 
    Node(T && data)
    {
-      pPrev = pNext = this;
+      *this = std::move(data);
    }
 
    //
@@ -144,7 +143,10 @@ inline Node <T> * insert(Node <T> * pCurrent,
 template <class T>
 inline size_t size(const Node <T> * pHead)
 {
-   return 99;
+   size_t size = 0;
+   for (Node <T> * p = pHead; p; p = p->pNext)
+      size++;
+   return size;
 }
 
 /***********************************************
