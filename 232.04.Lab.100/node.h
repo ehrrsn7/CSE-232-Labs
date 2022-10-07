@@ -136,7 +136,8 @@ inline Node <T> * copy(const Node <T> * pSource)
    Node <T> * tmp = pDestination;
 
    // loop through all items in list (pSource is the head)
-   if (pSource) {
+   if (pSource) 
+   {
       for (Node <T> * p = pSource->pNext; p; p = p->pNext) 
       {
          // allocate new nodes for each of those items
