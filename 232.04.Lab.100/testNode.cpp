@@ -10,7 +10,7 @@
 #ifndef DEBUG
 #define DEBUG   
 #endif
-//#undef DEBUG  // Remove this comment to disable unit tests
+// #undef DEBUG  // Remove this comment to disable unit tests
 
 #include "testSpy.h"        // for the spy unit tests
 #include "testNode.h"       // for the unit tests
@@ -27,6 +27,8 @@ int main()
    TestSpy().run();
    TestNode().run();
 #endif // DEBUG
+
+   cout << "main\n";
   
    return 0;
 }

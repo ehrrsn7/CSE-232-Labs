@@ -21,6 +21,7 @@
 
 #include <cassert>     // for ASSERT
 #include <iostream>    // for NULL
+using namespace std;
 
 /*************************************************
  * NODE
@@ -29,36 +30,92 @@
  * private.  This is the case because only the
  * List class can make validation decisions
  *************************************************/
-template <class T>
-class Node
-{
+
+template <typename T>
+class Node {
 public:
+   // member variables
+   T data;
+   Node <T> * pPrev;
+   Node <T> * pNext;
 
-   //
-   // Construct
-   //
-   Node()
+   // constructors
+   Node()               : pPrev(nullptr), pNext(nullptr), data(T()) { }
+
+   Node(const T & data) : pPrev(nullptr), pNext(nullptr)
    {
-      pPrev = pNext = nullptr;
+      this->data = (&data) ? data : T();
    }
 
-   Node(const T &  data)
+   Node(const Node <T> & n)   { *this = n; }
+
+   Node(Node <T> && n)        { *this = move(n); }
+
+   void insertAfter(Node <T> * pNext)
    {
-      *this = data;
+      pNext->pNext = this->pNext;
+      pNext->pPrev = this;
+
+      if (this->pNext) this->pNext->pPrev = pNext;
+
+      this->pNext = pNext;
    }
 
-   Node(T && data)
+   void insertBefore(Node <T> * pPrev)
    {
-      *this = std::move(data);
+      pPrev->pPrev = this->pPrev;
+      pPrev->pNext = this;
+
+      if (this->pPrev) this->pPrev->pNext = pPrev;
+
+      this->pPrev = pPrev;
    }
 
-   //
-   // Member variables
-   //
-   T data;                 // user data
-   Node <T> * pNext;       // pointer to next node
-   Node <T> * pPrev;       // pointer to previous node
+   T & operator * ()
+   {
+      return this->data;
+   }
+   
+
+   Node <T> * operator = (const Node <T> & rhs) 
+   {
+      this->data  = rhs.data;
+      this->pPrev = rhs.pPrev;
+      this->pNext = rhs.pNext;
+   }
+   
+   Node <T> * operator = (Node <T> && rhs) 
+   {
+      this->data  = move(rhs.data);
+      this->pPrev = move(rhs.pPrev);
+      this->pNext = move(rhs.pNext);
+   }
+
+   // miscellaneous
+   void print() 
+   {
+      cout  << "data | "  << this->data  << "\t"
+            << "pPrev | " << this->pPrev << "\t"
+            << "p | "     << this << "\t"
+            << "pNext | " << this->pNext << endl;
+   }
 };
+
+template <typename T>
+void printAll(Node<T> * pHead)
+{
+   for (Node <T> * p = pHead; p; p = p->pNext)
+      cout << **p << ' ';
+   cout << endl;
+}
+
+template <typename T>
+Node <T> * getLast(Node<T> * pHead)
+{
+   Node <T> * p = pHead;
+   while (p->pNext) p = p->pNext;
+   return p;
+}
 
 /***********************************************
  * COPY
@@ -71,7 +128,30 @@ public:
 template <class T>
 inline Node <T> * copy(const Node <T> * pSource) 
 {
-   return new Node<T>;
+   // get pDestination (pHead)
+   Node <T> * pDestination = (pSource) ? 
+      new Node<T>(pSource->data) : 
+      new Node<T>;
+
+   Node <T> * tmp = pDestination;
+
+   // loop through all items in list (pSource is the head)
+   if (pSource) {
+      for (Node <T> * p = pSource->pNext; p; p = p->pNext) 
+      {
+         // allocate new nodes for each of those items
+         Node <T> * newNode = new Node <T>(p->data);
+
+         // tie them to each other as they go on
+         tmp->pNext = newNode;
+         newNode->pPrev = tmp;
+
+         // shift tmp to the next node
+         tmp = newNode;
+      }
+   }
+
+   return pDestination; // return pDestination
 }
 
 /***********************************************
@@ -85,7 +165,7 @@ inline Node <T> * copy(const Node <T> * pSource)
 template <class T>
 inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
 {
-   
+   pDestination->data = pSource->data;
 }
 
 /***********************************************
@@ -96,7 +176,7 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
 template <class T>
 inline void swap(Node <T>* &pLHS, Node <T>* &pRHS)
 {
-
+   std::swap(pLHS, pRHS);
 }
 
 /***********************************************
@@ -114,7 +194,7 @@ inline Node <T> * remove(const Node <T> * pRemove)
 
 /**********************************************
  * INSERT 
- * Insert a new node the the value in "t" into a linked
+ * Insert a new node the value in "t" into a linked
  * list immediately before the current position.
  *   INPUT   : t - the value to be used for the new node
  *             pCurrent - a pointer to the node before which
@@ -128,6 +208,9 @@ inline Node <T> * insert(Node <T> * pCurrent,
                   const T & t,
                   bool after = false)
 {
+   // tie rhs to lhs's prev/next
+   // tie lhs's prev/next to rhs
+   // deallocate
    return new Node <T>;
 }
 
@@ -144,8 +227,8 @@ template <class T>
 inline size_t size(const Node <T> * pHead)
 {
    size_t size = 0;
-   for (Node <T> * p = pHead; p; p = p->pNext)
-      size++;
+   // for (Node <T> * p = pHead; p; p = p->pNext)
+   //    size++;
    return size;
 }
 
