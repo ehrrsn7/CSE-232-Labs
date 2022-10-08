@@ -143,10 +143,21 @@ inline Node <T> * copy(const Node <T> * pSource)
 template <class T>
 inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
 {
+
+   
    // prev <- tmp <- pDestination
    // both will be iterators, but tmp will only be used for valid pSource positions
    Node <T> * tmp = pDestination;
    Node <T> * prev = tmp;
+
+   // we know that the destination should become null since
+   // the list is fully empty. If destination had values
+   // they will not be lost because line 150 and 151 preserve
+   // the locations
+   if (!pSource)
+   {
+      pDestination = nullptr;
+   }
    
    // loop through pSource list
    for (auto p = pSource; p; p = p->pNext)
@@ -164,13 +175,22 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
    
       else
       {
+         
          // allocate new node and attach
          auto newNode = new Node<T>(p->data);
          newNode->pPrev = prev;
          if (prev) prev->pNext = newNode;
+         // if pDestination still points at null,
+         // point to the first element of our list we
+         // are creating
+         if (!pDestination)
+         {
+            pDestination = newNode;
+         }
          
          // iterate prev
          prev = newNode;
+         tmp = newNode->pNext;
       }
    }
    
@@ -188,13 +208,18 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
       // loop through the extraneous nodes and delete them using prev
       while (tmp->pNext)
       {
+         delete prev;
+         prev = nullptr;
          prev = tmp;
          tmp = tmp->pNext;
          delete prev;
+         prev = nullptr;
       }
       
       // the last one is the only one left over
+      
       delete tmp;
+      tmp = nullptr;
    }
 }
 
