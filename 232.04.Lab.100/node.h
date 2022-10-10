@@ -67,12 +67,6 @@ public:
       this->pPrev = pPrev;
    }
    
-   T & operator * ()
-   {
-      return this->data;
-   }
-   
-   
    Node <T> * operator = (const Node <T> & rhs)
    {
       this->data  = rhs.data;
@@ -87,15 +81,7 @@ public:
       this->pNext = move(rhs.pNext);
    }
 };
- 
-template <typename T>
-Node <T> * getLast(Node<T> * pHead)
-{
-   Node <T> * p = pHead;
-   while (p->pNext) p = p->pNext;
-   return p;
-}
- 
+
 /***********************************************
  * COPY
  * Copy the list from the pSource and return
@@ -143,22 +129,11 @@ inline Node <T> * copy(const Node <T> * pSource)
 template <class T>
 inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
 {
-
-   
    // prev <- tmp <- pDestination
-   // both will be iterators, but tmp will only be used for valid pSource positions
+   // tmp will be our pDestination iterator
    Node <T> * tmp = pDestination;
    Node <T> * prev = tmp;
 
-   // we know that the destination should become null since
-   // the list is fully empty. If destination had values
-   // they will not be lost because line 150 and 151 preserve
-   // the locations
-   if (!pSource)
-   {
-      pDestination = nullptr;
-   }
-   
    // loop through pSource list
    for (auto p = pSource; p; p = p->pNext)
    {
@@ -217,9 +192,14 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
       }
       
       // the last one is the only one left over
-      
       delete tmp;
       tmp = nullptr;
+   }
+   
+   if (!pSource)
+   {
+      // any deallocation has been handled above
+      pDestination = nullptr;
    }
 }
 
