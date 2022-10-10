@@ -297,9 +297,10 @@ inline size_t size(const Node <T> * pHead)
 template <class T>
 inline std::ostream & operator << (std::ostream & out, const Node <T> * pHead)
 {
+   out << pHead->data;
    return out;
 }
- 
+
 /*****************************************************
  * CLEAR
  * Free all the data currently in the linked list
