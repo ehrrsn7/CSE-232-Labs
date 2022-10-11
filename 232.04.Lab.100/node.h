@@ -269,9 +269,9 @@ inline Node <T> * insert(Node <T> * pCurrent,
 }
  
 /******************************************************
- * FIND
- * Find a given node in an unsorted linked list.  Return
- * a pointer to the node if it is found, NULL otherwise.
+ * SIZE
+ * Find a given node in an unsorted linked list.
+ * Return a pointer to the node if it is found, NULL otherwise.
  *  INPUT   : a pointer to the head of the linked list
  *            the value to be found
  *  OUTPUT  : a pointer to the node if it is found
@@ -297,7 +297,8 @@ inline size_t size(const Node <T> * pHead)
 template <class T>
 inline std::ostream & operator << (std::ostream & out, const Node <T> * pHead)
 {
-   out << pHead->data;
+   for (auto p = pHead; p; p = p->pNext)
+      out << p->data << ' ';
    return out;
 }
 
