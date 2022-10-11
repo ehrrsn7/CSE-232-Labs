@@ -13,8 +13,10 @@
  *    This will contain the class definition of:
  *        Node         : A class representing a Node
  *    Additionally, it will contain a few functions working on Node
- * Author
- *    <your names here>
+ * Authors
+ *    Hunter Powell
+ *    Carol Mercau
+ *    Elijah Harrison
  ************************************************************************/
  
 #pragma once
