@@ -133,8 +133,8 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
 {
    // prev <- tmp <- pDestination
    // tmp will be our pDestination iterator
-   Node <T> * tmp = pDestination;
-   Node <T> * prev = tmp;
+   Node <T>* tmp = pDestination;
+   Node <T>* prev = tmp;
 
    // loop through pSource list
    for (auto p = pSource; p; p = p->pNext)
@@ -144,15 +144,15 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
       {
          // copy source
          tmp->data = p->data;
-   
+
          // iterate prev and tmp
          prev = tmp;
          tmp = tmp->pNext;
       }
-   
+
       else
       {
-         
+
          // allocate new node and attach
          auto newNode = new Node<T>(p->data);
          newNode->pPrev = prev;
@@ -164,24 +164,24 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
          {
             pDestination = newNode;
          }
-         
+
          // iterate prev
          prev = newNode;
          tmp = newNode->pNext;
       }
    }
-   
+
    // delete remaining nodes from pDestination
    if (tmp)
    {
       // if emptyToStandard
       if (tmp == prev)
          tmp = tmp->pNext;
-      
+
       // sever ties with the list assigned thus far
       else
          prev->pNext = nullptr;
-      
+
       // loop through the extraneous nodes and delete them using prev
       while (tmp->pNext)
       {
@@ -192,12 +192,12 @@ inline void assign(Node <T> * & pDestination, const Node <T> * pSource)
          delete prev;
          prev = nullptr;
       }
-      
+
       // the last one is the only one left over
       delete tmp;
       tmp = nullptr;
    }
-   
+
    if (!pSource)
    {
       // any deallocation has been handled above
