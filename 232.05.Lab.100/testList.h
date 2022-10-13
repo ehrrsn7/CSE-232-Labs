@@ -26,7 +26,7 @@ public:
    void run()
    {
       reset();
-
+      
       // Construct
       test_construct_default();
       test_construct_sizeZero();
@@ -1112,7 +1112,7 @@ public:
          s = l.front();
          // verify
       }
-      catch (const char* sError)
+      catch (const char * sError)
       {
          assertUnit(std::string("ERROR: unable to access data from an empty list") ==
                 std::string(sError));
