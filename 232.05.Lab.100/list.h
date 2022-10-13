@@ -191,7 +191,7 @@ class list <T> :: iterator
    friend class custom::list;
 public:
    // constructors, destructors, and assignment operator
-   iterator()                       : p(new Node)  { }
+   iterator()                       : p(nullptr)   { }
    iterator(Node * p)               : p(p)         { }
    iterator(const iterator  & rhs)  : p(rhs.p)     { }
 
@@ -620,19 +620,18 @@ typename list<T>::iterator list<T>::insert(list<T>:: iterator it, const T & data
 {
    Node * newNode = new Node(data);
    
-   if (!empty() && it == end())
+   if (it == end())
       pTail->insertAfter(newNode);
-   
+
+   else if (after)
+      it.p->insertAfter(newNode);
+
    else
-   {
-      if (after)
-         it.p->insertAfter(newNode);
-      else
-         it.p->insertBefore(newNode);
-   }
+      it.p->insertBefore(newNode);
    
    if (!newNode->pPrev)
       pHead = newNode;
+   
    if (!newNode->pNext)
       pTail = newNode;
    
@@ -645,20 +644,19 @@ template <typename T>
 typename list<T>::iterator list<T>::insert(list<T>::iterator it, T && data, bool after)
 {
    Node * newNode = new Node(std::move(data));
-
-   if (!empty() && it == end())
-      pTail->insertAfter(newNode);
    
+   if (it == end())
+      pTail->insertAfter(newNode);
+
+   else if (after)
+      it.p->insertAfter(newNode);
+
    else
-   {
-      if (after)
-         it.p->insertAfter(newNode);
-      else
-         it.p->insertBefore(newNode);
-   }
+      it.p->insertBefore(newNode);
    
    if (!newNode->pPrev)
       pHead = newNode;
+   
    if (!newNode->pNext)
       pTail = newNode;
    
