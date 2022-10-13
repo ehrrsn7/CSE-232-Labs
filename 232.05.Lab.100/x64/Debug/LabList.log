@@ -1,0 +1,10 @@
+﻿  testList.cpp
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(120,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(121,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(134,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(135,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(148,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(149,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(187,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\testList.h(188,1): warning C4312: 'type cast': conversion from 'unsigned int' to 'custom::list<int>::Node *' of greater size
+  LabList.vcxproj -> C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\x64\Debug\LabList.exe

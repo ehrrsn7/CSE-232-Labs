@@ -90,8 +90,8 @@ public:
    //
    // Remove
    //
-   void pop_front()  { remove(pHead); }
-   void pop_back()   { remove(pTail); }
+   void pop_front()  { erase(pHead); }
+   void pop_back()   { erase(pTail); }
    void clear();
    iterator erase(const iterator& it);
 
@@ -110,8 +110,6 @@ private:
    Node * pHead;       // pointer to the beginning of the list
    Node * pTail;       // pointer to the ending of the list
 
-   // helper methods
-   void remove(const Node * pRemove);
 };
 
 /*************************************************
@@ -593,7 +591,7 @@ T & list <T> :: back()
 }
 
 /******************************************
- * LIST :: REMOVE
+ * LIST :: ERASE
  * remove an item from the middle of the list
  *     INPUT  : an iterator to the item being removed
  *     OUTPUT : iterator to the new location 
@@ -602,9 +600,45 @@ T & list <T> :: back()
 template <typename T>
 typename list<T>::iterator list<T>::erase(const list<T>::iterator & it)
 {
-   auto pNext = iterator((it.p) ? it.p->pNext : nullptr);
-   remove(it.p);
-   return pNext;
+    if (!it.p) return end();
+
+    auto itNext = end();
+
+    // Attach next to previous
+    if (it.p->pNext)
+    {
+        it.p->pNext->pPrev = it.p->pPrev;
+        itNext = it.p->pNext;
+    }
+    else
+        pTail = pTail->pPrev;
+    
+    // attach previous to next
+    if (it.p->pPrev)
+        it.p->pPrev->pNext = it.p->pNext;
+    else
+        pHead = pHead->pNext;
+
+    delete it.p;
+    numElements--;
+    return itNext;
+
+   /*auto pNext = iterator();
+
+   if (it.p)
+   {
+       if (it.p->pNext)
+           pNext = it.p->pNext;
+       else
+           pNext = it.p->pPrev;
+   }
+
+   delete it.p;
+
+   it.p->pPrev = it.p->pNext;
+   it.p->pNext = it.p->pPrev;
+
+   return pNext;*/
 }
 
 /******************************************
@@ -663,36 +697,6 @@ typename list<T>::iterator list<T>::insert(list<T>::iterator it, T && data, bool
    numElements++;
    
    return list<T>::iterator(newNode);
-}
-
-/***********************************************
- * REMOVE
- * Remove the node pSource in the linked list
- *   INPUT  : the node to be removed
- *   OUTPUT : the pointer to the parent node
- *   COST   : O(1)
- **********************************************/
-template <class T>
-void list<T>::remove(const Node * pRemove)
-{
-   if (!pRemove) return;
-
-   Node * parentNode = pRemove->pPrev;
-
-   if (pRemove->pNext) // attach next to prev
-      pRemove->pNext->pPrev = pRemove->pPrev;
-
-   if (pRemove->pPrev) // attach prev to next
-      pRemove->pPrev->pNext = pRemove->pNext;
-
-   else // try parentNode -> pNext if pPrev is null
-      parentNode = pRemove->pNext;
-
-   delete pRemove;
-
-   // housekeeping
-   pHead = parentNode;
-   numElements--;
 }
 
 /**********************************************
