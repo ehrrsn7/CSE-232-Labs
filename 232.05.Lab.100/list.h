@@ -600,45 +600,28 @@ T & list <T> :: back()
 template <typename T>
 typename list<T>::iterator list<T>::erase(const list<T>::iterator & it)
 {
-    if (!it.p) return end();
+   if (!it.p) return end();
 
-    auto itNext = end();
+   auto itNext = end();
 
-    // Attach next to previous
-    if (it.p->pNext)
-    {
-        it.p->pNext->pPrev = it.p->pPrev;
-        itNext = it.p->pNext;
-    }
-    else
-        pTail = pTail->pPrev;
-    
-    // attach previous to next
-    if (it.p->pPrev)
-        it.p->pPrev->pNext = it.p->pNext;
-    else
-        pHead = pHead->pNext;
-
-    delete it.p;
-    numElements--;
-    return itNext;
-
-   /*auto pNext = iterator();
-
-   if (it.p)
+   // Attach next to previous
+   if (it.p->pNext)
    {
-       if (it.p->pNext)
-           pNext = it.p->pNext;
-       else
-           pNext = it.p->pPrev;
+      it.p->pNext->pPrev = it.p->pPrev;
+      itNext = it.p->pNext;
    }
+   else
+      pTail = pTail->pPrev;
+   
+   // attach previous to next
+   if (it.p->pPrev)
+      it.p->pPrev->pNext = it.p->pNext;
+   else
+      pHead = pHead->pNext;
 
    delete it.p;
-
-   it.p->pPrev = it.p->pNext;
-   it.p->pNext = it.p->pPrev;
-
-   return pNext;*/
+   numElements--;
+   return itNext;
 }
 
 /******************************************
