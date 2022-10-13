@@ -307,6 +307,42 @@ list<T>::list(Iterator first, Iterator last)
  *     OUTPUT :
  *     COST   : O(n) with respect to the number of nodes
  *********************************************/
+
+/*********************************************
+ * From the book:
+ * 
+ * list.copy-assignment(rhs)
+ *    
+ *    itRHS <- rhs.begin
+ *    itLHS <- begin()
+ *    
+ *    WHILE itRHS != rhs.end() AND itLHS != end()
+ *       *itLHS <- *itRHS
+ *       ++itRHS
+ *       ++itLHS
+ * 
+ *    IF itRHS != rhs.end()
+ *       WHILE itRHS != rhs.end()
+ *          push_back(*itRHS)
+ *          ++itRHS
+ *    
+ *    ELSE IF rhs.empty()
+ *       clear()
+ * 
+ *    ELSE IF itLHS != end()
+ *       p <- itLHS.p
+ *       pTail <- p->pPrev
+ *       pNext <- p->pNext
+ *       
+ *       WHILE p != NULL
+ *          pNext <- p.pNext
+ *          DELETE p
+ *          p <- pNext
+ *          numElements--
+ *       
+ *       pTail->pNext <- NULL
+ *********************************************/
+
 template <typename T>
 list <T> & list <T> :: operator = (list <T> & rhs)
 {
