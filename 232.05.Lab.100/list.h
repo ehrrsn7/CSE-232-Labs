@@ -377,11 +377,12 @@ list <T> & list <T> :: operator = (list <T> & rhs)
          
          // if pDestination was empty
          if (!pDestination)
-            this->pHead = newNode;
+            pDestination = newNode;
 
          // iterate prev
          prev = newNode;
          tmp = newNode->pNext;
+         this->pTail = prev;
       }
    }
 
@@ -422,6 +423,7 @@ list <T> & list <T> :: operator = (list <T> & rhs)
 
    rhs.pHead = pSource;
    this->pHead = pDestination;
+   this->pTail = prev;
    return *this;
 }
 
@@ -435,77 +437,13 @@ list <T> & list <T> :: operator = (list <T> & rhs)
 template <typename T>
 list <T>& list <T> :: operator = (list <T> && rhs)
 {
-   // prev <- tmp <- pDestination (this)
-   // tmp will be our pDestination iterator
-   Node * tmp = this->pHead;
-   Node * prev = tmp;
-
-   // loop through pSource list
-   for (auto p = rhs.pHead; p; p = p->pNext)
-   {
-      // check tmp against pDestination list to see if space is already allocated for next pSource value
-      if (tmp)
-      {
-         // copy source
-         tmp->data = std::move(p->data);
-
-         // iterate prev and tmp
-         prev = tmp;
-         tmp = tmp->pNext;
-      }
-
-      else
-      {
-         // allocate new node and attach
-         auto newNode = new Node(p->data);
-         newNode->pPrev = prev;
-         if (prev) prev->pNext = newNode;
-         
-         // if pDestination was empty
-         if (!rhs.pHead)
-            this->pHead = newNode;
-
-         // iterate prev
-         prev = newNode;
-         tmp = newNode->pNext;
-      }
-   }
-
-   // delete remaining nodes from pDestination
-   if (tmp)
-   {
-      // if emptyToStandard
-      if (tmp == prev)
-         tmp = tmp->pNext;
-
-      // sever ties with the list assigned thus far
-      else
-         prev->pNext = nullptr;
-
-      // loop through the extraneous nodes and delete them using prev
-      while (tmp->pNext)
-      {
-         delete prev;
-         prev = nullptr;
-         prev = tmp;
-         tmp = tmp->pNext;
-         delete prev;
-         prev = nullptr;
-      }
-
-      // the last one is the only one left over
-      delete tmp;
-      tmp = nullptr;
-   }
-
-   if (!rhs.pHead)
-   {
-      // any deallocation has been handled above
-      this->pHead = nullptr;
-   }
-
-   this->numElements = rhs.numElements;
-   
+   this->clear();
+   this->pHead = std::move(rhs.pHead);
+   rhs.pHead = nullptr;
+   this->pTail = std::move(rhs.pTail);
+   rhs.pTail = nullptr;
+   this->numElements = std::move(rhs.numElements);
+   rhs.numElements = 0;
    return *this;
 }
 
@@ -519,16 +457,21 @@ list <T>& list <T> :: operator = (list <T> && rhs)
 template <typename T>
 list <T>& list <T> :: operator = (const std::initializer_list<T>& il)
 {
+   if (il.size() == 0) return *this;
    // initialize pHead at a placeholder location
    Node * it = pHead = new Node();
 
    for (auto element : il)
+   {
       it->insertAfter(new Node(element));
-
+      it = it->pNext;
+   }
    // shift pHead to pHead->pNext and delete placeholder
    auto tmp = pHead->pNext;
    std::swap(tmp, pHead);
    delete tmp;
+   if(pHead) pHead->pPrev = nullptr;
+   pTail = it;
 
    numElements = il.size();
    
