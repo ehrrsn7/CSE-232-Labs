@@ -14,8 +14,10 @@
  *    This will contain the class definition of:
  *        BNode         : A class representing a BNode
  *    Additionally, it will contain a few functions working on Node
- * Author
- *    <your names here>
+ * Authors
+ *    Hunter Powell
+ *    Carol Mercau
+ *    Elijah Harrison
  ************************************************************************/
 
 #pragma once
