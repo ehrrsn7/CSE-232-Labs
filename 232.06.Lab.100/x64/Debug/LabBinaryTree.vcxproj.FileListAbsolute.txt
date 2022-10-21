@@ -1,1 +1,2 @@
 C:\Users\hunte\Documents\cs 232\CSE-232-Labs\232.06.Lab.100\x64\Debug\LabBinaryTree.exe
+C:\Users\merca\Documents\GitHub\CSE-232-Labs\232.06.Lab.100\x64\Debug\LabBinaryTree.exe
