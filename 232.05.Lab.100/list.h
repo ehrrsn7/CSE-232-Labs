@@ -285,7 +285,7 @@ list <T> ::list(size_t num, const T & t) : list()
  ****************************************/
 template <typename T>
 template <class Iterator>
-list<T>::list(Iterator first, Iterator last)
+list<T>::list(Iterator first, Iterator last) : list()
 {
    if (first == last) return;
 
