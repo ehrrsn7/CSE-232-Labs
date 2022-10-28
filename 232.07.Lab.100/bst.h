@@ -198,37 +198,61 @@ class BST <T> :: iterator
    friend class set; 
 public:
    // constructors and assignment
-   iterator(BNode * p = nullptr)          
-   { 
-   }
-   iterator(const iterator & rhs)         
-   { 
-   }
+   iterator(BNode * p = nullptr) : pNode(p) { }
+   iterator(const iterator & rhs) : pNode(rhs.pNode) { }
    iterator & operator = (const iterator & rhs)
    {
+      this->pNode = rhs.pNode;
       return *this;
    }
 
    // compare
    bool operator == (const iterator & rhs) const
    {
-      return true;
+      return this->pNode == rhs.pNode;
    }
    bool operator != (const iterator & rhs) const
    {
-      return true;
+      return this->pNode != rhs.pNode;
    }
 
    // de-reference. Cannot change because it will invalidate the BST
    const T & operator * () const 
    {
-      return *(new T);
+      return pNode->data;
    }
 
    // increment and decrement
    iterator & operator ++ ();
    iterator   operator ++ (int postfix)
    {
+      auto pCurrent = this->pNode;
+
+      // Have a right child 
+      if (pCurrent->pRight)
+      {
+         pCurrent = pCurrent->pRight;
+         while (pCurrent->pLeft)
+            pCurrent = pCurrent->pLeft;
+      }
+      
+      // no right child and we are our parent's left child
+      if (!pCurrent->pRight && pCurrent->pParent->pLeft == pCurrent)
+      {
+         pCurrent = pCurrent->pParent;
+      }
+      
+      // No right child and we are our parent's right child
+      if (!pCurrent->pRight && pCurrent->pParent->pRight == pCurrent)
+      {
+         while (pCurrent->pParent)
+         {
+            if (pCurrent->pParent->pRight == pCurrent)
+               pCurrent = pCurrent->pParent;
+         }
+         pCurrent = pCurrent->pParent;
+      }
+
       return *this;
    }
    iterator & operator -- ();
@@ -271,7 +295,7 @@ BST <T> ::BST()
  * Copy one tree to another
  ********************************************/
 template <typename T>
-BST <T> :: BST (const BST<T>& rhs) 
+BST <T> :: BST(const BST<T>& rhs) : BST()
 {
    *this = rhs;
 }
@@ -281,7 +305,7 @@ BST <T> :: BST (const BST<T>& rhs)
  * Move one tree to another
  ********************************************/
 template <typename T>
-BST <T> :: BST(BST <T> && rhs) 
+BST <T> :: BST(BST <T> && rhs) : BST()
 {
    numElements = 99;
    root = new BNode;
@@ -292,7 +316,7 @@ BST <T> :: BST(BST <T> && rhs)
  * Create a BST from an initializer list
  ********************************************/
 template <typename T>
-BST <T> ::BST(const std::initializer_list<T>& il)
+BST <T> ::BST(const std::initializer_list<T>& il) : BST()
 {
    numElements = 99;
    root = new BNode;
@@ -315,7 +339,12 @@ BST <T> :: ~BST()
 template <typename T>
 BST <T> & BST <T> :: operator = (const BST <T> & rhs)
 {
-   // First: iterator 
+   clear();
+
+   for (iterator it = begin(); it != end(); it++)
+      insert(*it);
+
+   numElements = rhs.numElements;
 
    return *this;
 }
@@ -357,14 +386,26 @@ void BST <T> :: swap (BST <T>& rhs)
 template <typename T>
 std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
 {
-   std::pair<iterator, bool> pairReturn(end(), false);
+   // insert logic here
+   auto it = end();
+   
+   /*
+   IF pParent.isRed() AND pGranny.isBlack() AND
+         pSibling.isBlack() AND pAunt.isBlack() AND
+         pParent.pLeft = pNew AND pGranny.pRight = pParent
+
+      pGranny.setRight
+   */
+
+   // return
+   std::pair<iterator, bool> pairReturn(it, keepUnique);
    return pairReturn;
 }
 
 template <typename T>
 std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
 {
-   std::pair<iterator, bool> pairReturn(end(), false);
+   std::pair<iterator, bool> pairReturn(end(), keepUnique);
    return pairReturn;
 }
 
@@ -385,12 +426,12 @@ typename BST <T> ::iterator BST <T> :: erase(iterator & it)
 template <typename T>
 void BST <T> ::clear() noexcept
 {
-   if (!this)
-      return;
-   clear(this->pLeft);
-   clear(this->pRight);
-   delete this;
-   this = nullptr;
+   // if (!this)
+   //    return;
+   // clear(this->pLeft);
+   // clear(this->pRight);
+   // delete this;
+   // this = nullptr;
 }
 
 /*****************************************************
@@ -400,7 +441,12 @@ void BST <T> ::clear() noexcept
 template <typename T>
 typename BST <T> :: iterator custom :: BST <T> :: begin() const noexcept
 {
-   return end();
+   if (empty()) return end();
+   
+   auto p = root;
+   while (p->pLeft)
+      p = p->pLeft;
+   return iterator(p);
 }
 
 
@@ -512,7 +558,33 @@ void BST <T> ::BNode::addRight(T && t)
 template <typename T>
 typename BST <T> :: iterator & BST <T> :: iterator :: operator ++ ()
 {
-   return *this;  
+   if (!this->pNode) return *this;
+
+   iterator & tmp = *this;
+   auto pCurrent = this->pNode;
+
+   // Have a right child 
+   if (pCurrent->pRight)
+   {
+      pCurrent = pCurrent->pRight;
+      while (pCurrent->pLeft)
+         pCurrent = pCurrent->pLeft;
+   }
+   
+   // no right child and we are our parent's left child
+   else if (!pCurrent->pRight && pCurrent->pParent->pLeft == pCurrent)
+      pCurrent = pCurrent->pParent;
+   
+   // No right child and we are our parent's right child
+   else if (!pCurrent->pRight && pCurrent->pParent->pRight == pCurrent)
+   {
+      while (pCurrent->pParent && pCurrent->pParent->pRight == pCurrent)
+         pCurrent = pCurrent->pParent;
+      pCurrent = pCurrent->pParent;
+   }
+
+   this->pNode = pCurrent;
+   return tmp;
 }
 
 /**************************************************
@@ -526,7 +598,4 @@ typename BST <T> :: iterator & BST <T> :: iterator :: operator -- ()
 
 }
 
-
 } // namespace custom
-
-

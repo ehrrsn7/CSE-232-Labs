@@ -65,7 +65,7 @@ public:
       test_swap_standardToStandard();*/
 
       // Iterator
-      /*test_begin_empty();
+      test_begin_empty();
       test_begin_standard();
       test_end_standard();
       test_iterator_increment_standardToParent();
@@ -74,7 +74,7 @@ public:
       test_iterator_increment_standardToGrandchild();
       test_iterator_increment_standardToDone();
       test_iterator_increment_standardEnd();
-      test_iterator_dereference_standardRead();*/
+      test_iterator_dereference_standardRead();
 
       // Find
       /*test_find_empty();
