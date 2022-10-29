@@ -70,9 +70,19 @@ public:
    // Construct
    //
    BST() : numElements(0), root(nullptr) { }
-   BST(const BST &  rhs) { *this = rhs; }
+   BST(const BST &  rhs) 
+   {
+      root = nullptr;
+      numElements = 0;
+      *this = rhs;
+   }
    BST(      BST && rhs) { *this = std::move(rhs); }
-   BST(const std::initializer_list<T>& il) { *this = il; }
+   BST(const std::initializer_list<T>& il) 
+   { 
+      root = nullptr;
+      numElements = 0;
+      *this = il; 
+   }
    ~BST() { }
 
    //
@@ -240,9 +250,7 @@ private:
 template <typename T>
 BST <T> & BST <T> :: operator = (const BST <T> & rhs)
 {
-   clear();
-
-   for (iterator it = begin(); it != end(); it++)
+   for (iterator it = rhs.begin(); it != rhs.end(); it++)
       insert(*it);
 
    numElements = rhs.numElements;
@@ -330,7 +338,82 @@ void insert(typename BST<T> :: BNode * pThis, typename BST<T> :: BNode * pNew)
 template <typename T>
 std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
 {
-   BNode * pNew = new BNode(t);
+   BNode* pNew = new BNode(t);
+   //If we are the first node we are root and roots are always black
+   //case 1
+   if (empty())
+   {
+      root = pNew;
+      root->isRed = false;
+      numElements += 1;
+      std::pair<iterator, bool> pairReturn(iterator(pNew), keepUnique);
+      return pairReturn;
+   }
+   //start our current location as root
+
+   BNode* currentNode = root;
+   BNode* parent = root->pParent;
+   BNode* leftNode = root->pLeft;
+   BNode* rightNode = root->pRight;
+   //Check if we have children
+   while (currentNode)
+   {
+      //Check if we move left or right
+      //Moving left
+      if (currentNode->data > t)
+      { 
+         //Move left
+         parent = currentNode;
+         currentNode = leftNode;
+         if (currentNode)
+         {
+            leftNode = currentNode->pLeft;
+            rightNode = currentNode->pRight;
+         }
+         else
+         {
+            leftNode = nullptr;
+            rigthNode = nullptr;
+         }
+      }
+      //Moving right
+      else
+      {
+         parent = currentNode;
+         currentNode = rightNode;
+         if (currentNode)
+         {
+            leftNode = currentNode->pLeft;
+            rightNode = currentNode->pRight;
+         }
+         else
+         {
+            leftNode = nullptr;
+            rigthNode = nullptr;
+         }
+      }
+   }
+
+   //Now we can add the node to the tree
+   if (parent->data < t)
+   {
+      parent->addLeft(pNew);
+      //recoloring
+      //case 2 parent is black
+      if (!parent->isRed)
+      {
+         pNew->isRed = true;
+      }
+      //check if we have a granny
+      else if (parent->pParent)
+         if (parent->pParent->isRed)
+      
+   }
+   else
+   {
+      parent->addRight(pNew);
+   }
+   
    // custom::insert(root, pNew);
    std::pair<iterator, bool> pairReturn(iterator(pNew), keepUnique);
    return pairReturn;
@@ -394,16 +477,26 @@ typename BST <T> ::iterator BST <T> :: erase(iterator & it)
  * BST :: CLEAR
  * Removes all the BNodes from a tree
  ****************************************************/
-template <typename T>
-void BST <T> ::clear() noexcept
-{
-   auto it = begin();
+/*   auto it = begin();
 
    while (it != end())
       it = erase(it);
 
    root = nullptr;
    numElements = 0;
+   TODO remove this comment but this wasn't working because
+   Bro Helfrich gave us BADF00D as a pointer which ruined us removing the 
+   elements in our intended way*/
+template <typename T>
+void BST <T> ::clear() noexcept
+{
+    auto it = begin();
+
+    while (it != end())
+        it = erase(it);
+
+    root = nullptr;
+    numElements = 0;
 }
 
 /*****************************************************
@@ -416,10 +509,11 @@ typename BST <T> :: iterator custom :: BST <T> :: begin() const noexcept
    if (empty()) return end();
    
    auto p = root;
-
-   while (p->pLeft)
-      p = p->pLeft;
-
+   if (p->pLeft)
+   {
+      while (p->pLeft)
+         p = p->pLeft;
+   }
    return iterator(p);
 }
 

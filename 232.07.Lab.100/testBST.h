@@ -34,9 +34,9 @@ public:
       reset();
 
       // Construct
-      // test_construct_default();
-      // test_constructCopy_empty();
-      // test_constructCopy_one();
+      test_construct_default();
+      test_constructCopy_empty();
+      //test_constructCopy_one();
       // test_constructCopy_standard();
       // test_constructMove_empty();
       // test_constructMove_one();
@@ -83,7 +83,7 @@ public:
       test_find_standardMissing();
 
       // Insert
-      // test_insert_oneLeft();
+      test_insert_oneLeft();
       // test_insert_oneRight();
       // test_insert_duplicate();
       // test_insert_keepUnique();
@@ -98,8 +98,8 @@ public:
       // test_erase_noChildren();
       // test_erase_oneChild();
       // test_erase_twoChildren();
-      test_clear_empty();
-      test_clear_standard();
+      //test_clear_empty();
+      //test_clear_standard();
 
       // Status
       test_empty_empty();
