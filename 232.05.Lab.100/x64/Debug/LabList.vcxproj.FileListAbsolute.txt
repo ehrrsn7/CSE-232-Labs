@@ -1,2 +1,0 @@
-C:\Users\merca\OneDrive\Documents\GitHub\CSE-232-Labs\232.05.Lab.100\x64\Debug\LabList.exe
-C:\Users\hunte\Documents\cs 232\CSE-232-Labs\232.05.Lab.100\x64\Debug\LabList.exe
