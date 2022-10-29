@@ -352,7 +352,41 @@ std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepU
 template <typename T>
 typename BST <T> ::iterator BST <T> :: erase(iterator & it)
 {
-   auto prev = it;
+   // no children
+   if (!it.pNode->pLeft && !it.pNode->pRight)
+   {
+       if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
+           it.pNode->pParent->pRight = nullptr;
+       if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
+           it.pNode->pParent->pLeft = nullptr;
+   }
+   
+   // one child
+   if (it.pNode->pLeft && !it.pNode->pRight)
+   {
+      it.pNode->pLeft->pParent = it.pNode->pParent;
+      if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
+         it.pNode->pParent->pRight = it.pNode->pLeft;
+      if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
+          it.pNode->pParent->pRight = it.pNode->pLeft;
+   }
+
+   if (!it.pNode->pLeft && it.pNode->pRight)
+   {
+      it.pNode->pRight->pParent = it.pNode->pParent;
+      if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
+         it.pNode->pParent->pRight = it.pNode->pRight;
+      if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
+         it.pNode->pParent->pLeft = it.pNode->pRight;
+   }
+   
+   // two children
+   else
+   {
+      
+   }
+
+   delete it.pNode;
    return ++it;
 }
 
@@ -364,8 +398,11 @@ template <typename T>
 void BST <T> ::clear() noexcept
 {
    auto it = begin();
+
    while (it != end())
       it = erase(it);
+
+   root = nullptr;
    numElements = 0;
 }
 
@@ -394,15 +431,19 @@ typename BST <T> :: iterator custom :: BST <T> :: begin() const noexcept
 template <typename T>
 typename BST <T> :: iterator BST<T> :: find(const T & t)
 {
-   // TODO
-   /*auto p = root;
+   auto p = root;
    
-   while (!p)
+   while (p)
    {
-      if (p->data == t) return iterator(p);
-      else if (t < p->data) p = p->pLeft;
-      else p = p->pRight;
-   }*/
+      if (p->data == t) 
+          return iterator(p);
+      
+      else if (t < p->data) 
+          p = p->pLeft;
+      
+      else 
+          p = p->pRight;
+   }
    
    return end();
 }

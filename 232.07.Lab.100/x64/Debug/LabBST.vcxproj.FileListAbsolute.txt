@@ -1,2 +1,3 @@
 C:\Users\hunte\Documents\cs 232\CSE-232-Labs\232.07.Lab.100\x64\Debug\LabBST.exe
 C:\Users\hunte\source\github\CSE-232-Labs\232.07.Lab.100\x64\Debug\LabBST.exe
+C:\Users\Admin\Documents\Code\CSE-232\Labs\232.07.Lab.100\x64\Debug\LabBST.exe
