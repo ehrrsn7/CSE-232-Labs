@@ -34,10 +34,10 @@ public:
       reset();
 
       // Construct
-      test_construct_default();
+      /*test_construct_default();
       test_constructCopy_empty();
       test_constructCopy_one();
-      /*test_constructCopy_standard();
+      test_constructCopy_standard();
       test_constructMove_empty();
       test_constructMove_one();
       test_constructMove_standard();
@@ -77,10 +77,10 @@ public:
       test_iterator_dereference_standardRead();
 
       // Find
-      /*test_find_empty();
+      test_find_empty();
       test_find_standardBegin();
       test_find_standardLast();
-      test_find_standardMissing();*/
+      test_find_standardMissing();
 
       // Insert
       /*test_insert_oneLeft();
@@ -102,10 +102,10 @@ public:
       test_clear_standard();*/
 
       // Status
-      /*test_empty_empty();
+      test_empty_empty();
       test_empty_standard();
       test_size_empty();
-      test_size_standard();*/
+      test_size_standard();
 
       report("BST");
    }
