@@ -70,6 +70,10 @@ private:
    class BNode;
    BNode * root;       // root node of the binary search tree
    size_t numElements; // number of elements currently in the tree
+   
+   void deleteBinaryTree(BNode * & p);
+   BNode * copyBinaryTree(const BNode * pSrc);
+   void assignBinaryTree(BNode * & pDest, const BNode * pSrc);
 
 public:
    //
@@ -134,12 +138,6 @@ public:
 template <typename T>
 class BST <T> :: BNode
 {
-    friend size_t size(const BST <T> :: BNode * p);
-    friend void deleteBinaryTree(BST <T> :: BNode * & pThis);
-    friend void BST <T> ::deleteNode(BNode * & pDelete, bool toRight);
-    friend BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc);
-    friend void assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc);
-
 public:
    // 
    // Construct
@@ -229,6 +227,8 @@ private:
    
    // the node
    BNode * pNode;
+   
+   
 };
 
 
@@ -242,15 +242,15 @@ inline helper functions
  * SIZE BTREE
  * Return the size of a b-tree under the current node
  *******************************************************************/
-template <class T>
-inline size_t size(const typename BST <T> :: BNode * p)
-{
-   if (p == NULL)
-      return 0;
-   size_t sizeL = size(p->pLeft);
-   size_t sizeR = size(p->pRight);
-   return sizeL + 1 + sizeR;
-}
+//template <class T>
+//inline size_t size(const typename BST <T> :: BNode * p)
+//{
+//   if (p == NULL)
+//      return 0;
+//   size_t sizeL = size(p->pLeft);
+//   size_t sizeR = size(p->pRight);
+//   return sizeL + 1 + sizeR;
+//}
 
 /*****************************************************
  * DELETE BINARY TREE (recursive)
@@ -258,14 +258,14 @@ inline size_t size(const typename BST <T> :: BNode * p)
  * using postfix traverse: LRV
  ****************************************************/
 template <class T>
-inline void deleteBinaryTree(typename BST <T> :: BNode * & pThis)
+void BST<T>::deleteBinaryTree(BST <T> :: BNode * & p)
 {
-   if (!pThis)
+   if (!p)
       return;
-   clear(pThis->pLeft);
-   clear(pThis->pRight);
-   delete pThis;
-   pThis = nullptr;
+   clear(p->pLeft);
+   clear(p->pRight);
+   delete p;
+   p = nullptr;
 }
 
 /**********************************************
@@ -274,7 +274,7 @@ inline void deleteBinaryTree(typename BST <T> :: BNode * & pThis)
  * pSrc->pLeft onto pDest->pLeft
  *********************************************/
 template <class T>
-inline typename BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc)
+BST <T> :: BNode * BST <T> :: copyBinaryTree(const BST <T> :: BNode * pSrc)
 {
    if (!pSrc)
       return nullptr;
@@ -298,7 +298,7 @@ inline typename BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc)
  * as many of the nodes as possible.
  *********************************************/
 template <class T>
-inline void assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc)
+void BST <T> :: assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc)
 {
    if (!pSrc)
    {
