@@ -64,6 +64,12 @@ class BST
 
    template <class KK, class VV>
    friend void swap(map<KK, VV>& lhs, map<KK, VV>& rhs);
+   
+private:
+
+   class BNode;
+   BNode * root;       // root node of the binary search tree
+   size_t numElements; // number of elements currently in the tree
 
 public:
    //
@@ -110,18 +116,13 @@ public:
    //
    iterator erase(iterator& it);
    void clear() noexcept;
+   void deleteNode(BNode * & pDelete, bool toRight);
 
    // 
    // Status
    //
    bool empty()  const noexcept { return !numElements; }
    size_t size() const noexcept { return numElements; }
-
-private:
-
-   class BNode;
-   BNode * root;       // root node of the binary search tree
-   size_t numElements; // number of elements currently in the tree
 };
 
 
@@ -133,11 +134,11 @@ private:
 template <typename T>
 class BST <T> :: BNode
 {
-   // friend size_t size(const BST <T> :: BNode * p);
-   // friend void deleteBinaryTree(BST <T> :: BNode * & pThis);
-   // friend void BST <T> ::deleteNode(BNode * & pDelete, bool toRight);
-   // friend BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc);
-   // friend void assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc);
+    friend size_t size(const BST <T> :: BNode * p);
+    friend void deleteBinaryTree(BST <T> :: BNode * & pThis);
+    friend void BST <T> ::deleteNode(BNode * & pDelete, bool toRight);
+    friend BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc);
+    friend void assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc);
 
 public:
    // 
@@ -242,7 +243,7 @@ inline helper functions
  * Return the size of a b-tree under the current node
  *******************************************************************/
 template <class T>
-inline size_t size(const BST <T> :: BNode * p)
+inline size_t size(const typename BST <T> :: BNode * p)
 {
    if (p == NULL)
       return 0;
@@ -257,7 +258,7 @@ inline size_t size(const BST <T> :: BNode * p)
  * using postfix traverse: LRV
  ****************************************************/
 template <class T>
-inline void deleteBinaryTree(BST <T> :: BNode * & pThis)
+inline void deleteBinaryTree(typename BST <T> :: BNode * & pThis)
 {
    if (!pThis)
       return;
@@ -268,48 +269,12 @@ inline void deleteBinaryTree(BST <T> :: BNode * & pThis)
 }
 
 /**********************************************
- * DELETE NODE
- * Delete a single node (pDelete) from the tree
- * indicated by a node (pDelete)
- *    pDelete  the node to be deleted
- *    toRight  should the right branch inherit our place?
- *********************************************/
-template <typename T>
-inline void BST <T> ::deleteNode(BNode * & pDelete, bool toRight)
-{
-   // shift everything up
-   BNode * pNext = (toRight) ? pDelete->pRight : pDelete->pLeft;
-
-   // if we are not the parent, hook ourselves into the existing tree
-   if (pDelete != root)
-   {
-      if (pDelete->pParent->pLeft == pDelete)
-      {
-         pDelete->pParent->pLeft = nullptr;
-         pDelete->pParent->addLeft(pNext);
-      }
-      else
-      {
-         pDelete->pParent->pRight = nullptr;
-         pDelete->pParent->addRight(pNext);
-      }
-   }
-
-   // otherwise
-   else
-   {
-      this->root = pNext;
-      pNext->pParent = nullptr;
-   }
-}
-
-/**********************************************
  * COPY BINARY TREE
  * Copy pSrc->pRight to pDest->pRight and
  * pSrc->pLeft onto pDest->pLeft
  *********************************************/
 template <class T>
-inline BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc)
+inline typename BST <T> :: BNode * copyBinaryTree(const BST <T> :: BNode * pSrc)
 {
    if (!pSrc)
       return nullptr;
@@ -424,7 +389,7 @@ BST <T> & BST <T> :: operator = (const std::initializer_list<T>& il)
  * Insert a node at a given location in the tree
  ****************************************************/
 template <typename T>
-std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
+std::pair<BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
 {
    BNode* pNew = new BNode(t);
 
@@ -625,7 +590,7 @@ std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, boo
 }
 
 template <typename T>
-std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
+std::pair<BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
 {
    auto pNew = new BNode(std::move(t));
    // *insert logic*
@@ -638,7 +603,7 @@ std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepU
  * Remove a given node as specified by the iterator
  ************************************************/
 template <typename T>
-typename BST <T> ::iterator BST <T> :: erase(iterator & it)
+BST <T> ::iterator BST <T> :: erase(iterator & it)
 {
    // no children
    if (!it.pNode->pLeft && !it.pNode->pRight)
@@ -703,6 +668,42 @@ typename BST <T> ::iterator BST <T> :: erase(iterator & it)
 
    delete it.pNode;
    return ++it;
+}
+
+/**********************************************
+ * DELETE NODE
+ * Delete a single node (pDelete) from the tree
+ * indicated by a node (pDelete)
+ *    pDelete  the node to be deleted
+ *    toRight  should the right branch inherit our place?
+ *********************************************/
+template <typename T>
+void BST <T> ::deleteNode(BNode * & pDelete, bool toRight)
+{
+   // shift everything up
+   BNode * pNext = (toRight) ? pDelete->pRight : pDelete->pLeft;
+
+   // if we are not the parent, hook ourselves into the existing tree
+   if (pDelete != root)
+   {
+      if (pDelete->pParent->pLeft == pDelete)
+      {
+         pDelete->pParent->pLeft = nullptr;
+         pDelete->pParent->addLeft(pNext);
+      }
+      else
+      {
+         pDelete->pParent->pRight = nullptr;
+         pDelete->pParent->addRight(pNext);
+      }
+   }
+
+   // otherwise
+   else
+   {
+      this->root = pNext;
+      pNext->pParent = nullptr;
+   }
 }
 
 /*****************************************************
@@ -809,9 +810,9 @@ void BST<T> :: BNode :: addLeft (const T & t)
    try
    {
       BNode * pNode = new BNode(t);
-      addLeft(pNode)
+      addLeft(pNode);
    }
-   catch
+   catch (...)
    {
       throw "ERROR: Unable to allocate a node";
    }
@@ -828,9 +829,9 @@ void BST<T> ::BNode::addLeft(T && t)
    try
    {
       BNode * pNode = new BNode(std::move(t));
-      addLeft(pNode)
+      addLeft(pNode);
    }
-   catch
+   catch (...)
    {
       throw "ERROR: Unable to allocate a node";
    }
@@ -847,9 +848,9 @@ void BST <T> :: BNode :: addRight (const T & t)
    try
    {
       BNode * pNode = new BNode(t);
-      addRight(pNode)
+      addRight(pNode);
    }
-   catch 
+   catch (...)
    {
       throw "ERROR: Unable to allocate a node";
    }
@@ -866,9 +867,9 @@ void BST <T> ::BNode::addRight(T && t)
    try
    {
       BNode * pNode = new BNode(std::move(t));
-      addRight(pNode)
+      addRight(pNode);
    }
-   catch 
+   catch (...)
    {
       throw "ERROR: Unable to allocate a node";
    }
