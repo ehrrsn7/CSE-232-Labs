@@ -21,10 +21,10 @@
 #include <string>
 #include <functional> // for std::less and std::greater
 
- /***********************************************
-  * TEST BST
-  * Unit tests for the BST class
-  ***********************************************/
+/***********************************************
+ * TEST BST
+ * Unit tests for the BST class
+ ***********************************************/
 class TestBST : public UnitTest
 {
 

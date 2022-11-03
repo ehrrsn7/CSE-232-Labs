@@ -66,11 +66,12 @@ class BST
    friend void swap(map<KK, VV>& lhs, map<KK, VV>& rhs);
    
 private:
-
+   // member variables
    class BNode;
    BNode * root;       // root node of the binary search tree
    size_t numElements; // number of elements currently in the tree
    
+   // helper methods
    void deleteBinaryTree(BNode * & p);
    BNode * copyBinaryTree(const BNode * pSrc);
    void assignBinaryTree(BNode * & pDest, const BNode * pSrc);
@@ -189,68 +190,64 @@ class BST <T> :: iterator
    friend class ::TestMap;
    friend class ::TestSet;
    
+   // must give friend status to remove so it can call getNode() from it
+   friend BST <T> :: iterator BST <T> :: erase(iterator & it);
+
+private:
+   // the node
+   BNode * pNode;
+
 public:
    // constructors and assignment
    iterator(BNode * p = nullptr)  : pNode(p) { }
    iterator(const iterator & rhs) : pNode(rhs.pNode) { }
-   
+
+   // operators
+   const T & operator * () const { return pNode->data; }
+
    iterator & operator = (const iterator & rhs)
    {
       this->pNode = rhs.pNode;
       return *this;
    }
 
-   // compare
    bool operator == (const iterator & rhs) const
    {
       return this->pNode == rhs.pNode;
    }
-   
+
    bool operator != (const iterator & rhs) const
    {
       return this->pNode != rhs.pNode;
    }
 
-   // de-reference. Cannot change because it will invalidate the BST
-   const T & operator * () const { return pNode->data; }
-
-   // increment and decrement
    iterator & operator ++ ();
-   iterator   operator ++ (int postfix);
+
+   iterator operator ++ (int postfix)
+   {
+      auto tmp = *this;
+      ++(*this);
+      return tmp;
+   }
+
    iterator & operator -- ();
-   iterator   operator -- (int postfix);
 
-   // must give friend status to remove so it can call getNode() from it
-   friend BST <T> :: iterator BST <T> :: erase(iterator & it);
-
-private:
-   
-   // the node
-   BNode * pNode;
-   
-   
+   iterator operator -- (int postfix)
+   {
+      auto tmp = *this;
+      --(*this);
+      return tmp;
+   }
 };
 
 
-/*
+/*****************************************************************
+ ****************************** BST ******************************
+ *****************************************************************/
 
-inline helper functions
-
-*/
-
-/*******************************************************************
- * SIZE BTREE
- * Return the size of a b-tree under the current node
- *******************************************************************/
-//template <class T>
-//inline size_t size(const typename BST <T> :: BNode * p)
-//{
-//   if (p == NULL)
-//      return 0;
-//   size_t sizeL = size(p->pLeft);
-//   size_t sizeR = size(p->pRight);
-//   return sizeL + 1 + sizeR;
-//}
+/*****************************************************************
+ * Private BST Helper Methods
+ *****************************************************************/
 
 /*****************************************************
  * DELETE BINARY TREE (recursive)
@@ -258,7 +255,7 @@ inline helper functions
  * using postfix traverse: LRV
  ****************************************************/
 template <class T>
-void BST<T>::deleteBinaryTree(BST <T> :: BNode * & p)
+void BST<T>::deleteBinaryTree(BST<T>::BNode * & p)
 {
    if (!p)
       return;
@@ -274,7 +271,7 @@ void BST<T>::deleteBinaryTree(BST <T> :: BNode * & p)
  * pSrc->pLeft onto pDest->pLeft
  *********************************************/
 template <class T>
-typename BST <T> :: BNode * BST <T> :: copyBinaryTree(const BST <T> :: BNode * pSrc)
+typename BST<T>::BNode * BST<T>::copyBinaryTree(const BST<T>::BNode * pSrc)
 {
    if (!pSrc)
       return nullptr;
@@ -298,7 +295,7 @@ typename BST <T> :: BNode * BST <T> :: copyBinaryTree(const BST <T> :: BNode * p
  * as many of the nodes as possible.
  *********************************************/
 template <class T>
-void BST <T> :: assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BNode * pSrc)
+void BST<T>::assignBinaryTree(BST<T>::BNode * & pDest, const BST<T>::BNode * pSrc)
 {
    if (!pSrc)
    {
@@ -321,23 +318,16 @@ void BST <T> :: assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BN
       pDest->pRight->pParent = pDest;
 }
 
-
-/*********************************************
- *********************************************
- *********************************************
- ******************** BST ********************
- *********************************************
- *********************************************
- *********************************************/
-
-
+/*****************************************************************
+ * Public BST Methods
+ *****************************************************************/
 
 /*********************************************
  * BST :: ASSIGNMENT OPERATOR
  * Copy one tree to another
  ********************************************/
 template <typename T>
-BST <T> & BST <T> :: operator = (const BST <T> & rhs)
+BST<T> & BST<T>::operator = (const BST<T> & rhs)
 {
    for (iterator it = rhs.begin(); it != rhs.end(); it++)
       insert(*it);
@@ -354,7 +344,7 @@ BST <T> & BST <T> :: operator = (const BST <T> & rhs)
  * Move one tree to another
  ********************************************/
 template <typename T>
-BST <T> & BST <T> :: operator = (BST <T> && rhs)
+BST<T> & BST<T>::operator = (BST<T> && rhs)
 {
    clear();
 
@@ -371,7 +361,7 @@ BST <T> & BST <T> :: operator = (BST <T> && rhs)
  * Copy nodes onto a BTree
  ********************************************/
 template <typename T>
-BST <T> & BST <T> :: operator = (const std::initializer_list<T>& il)
+BST<T> & BST<T>::operator = (const std::initializer_list<T>& il)
 {
    clear();
 
@@ -389,7 +379,7 @@ BST <T> & BST <T> :: operator = (const std::initializer_list<T>& il)
  * Insert a node at a given location in the tree
  ****************************************************/
 template <typename T>
-std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
+std::pair<typename BST<T>::iterator, bool> BST<T>::insert(const T & t, bool keepUnique)
 {
    BNode* pNew = new BNode(t);
 
@@ -590,7 +580,7 @@ std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, boo
 }
 
 template <typename T>
-std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
+std::pair<typename BST<T>::iterator, bool> BST<T>::insert(T && t, bool keepUnique)
 {
    auto pNew = new BNode(std::move(t));
    // *insert logic*
@@ -603,7 +593,7 @@ std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepU
  * Remove a given node as specified by the iterator
  ************************************************/
 template <typename T>
-typename BST <T> ::iterator BST <T> :: erase(iterator & it)
+typename BST<T>::iterator BST<T>::erase(iterator & it)
 {
    // no children
    if (!it.pNode->pLeft && !it.pNode->pRight)
@@ -678,7 +668,7 @@ typename BST <T> ::iterator BST <T> :: erase(iterator & it)
  *    toRight  should the right branch inherit our place?
  *********************************************/
 template <typename T>
-void BST <T> ::deleteNode(BNode * & pDelete, bool toRight)
+void BST<T>::deleteNode(BNode * & pDelete, bool toRight)
 {
    // shift everything up
    BNode * pNext = (toRight) ? pDelete->pRight : pDelete->pLeft;
@@ -711,7 +701,7 @@ void BST <T> ::deleteNode(BNode * & pDelete, bool toRight)
  * Removes all the BNodes from a tree
  ****************************************************/
 template <typename T>
-void BST <T> ::clear() noexcept
+void BST<T>::clear() noexcept
 {
    auto it = begin();
 
@@ -727,7 +717,7 @@ void BST <T> ::clear() noexcept
  * Return the first node (left-most) in a binary search tree
  ****************************************************/
 template <typename T>
-typename BST <T> :: iterator custom :: BST <T> :: begin() const noexcept
+typename BST<T>::iterator BST<T>::begin() const noexcept
 {
    if (empty()) return end();
    
@@ -747,7 +737,7 @@ typename BST <T> :: iterator custom :: BST <T> :: begin() const noexcept
  * Return the node corresponding to a given value
  ****************************************************/
 template <typename T>
-typename BST <T> :: iterator BST<T> :: find(const T & t)
+typename BST<T>::iterator BST<T>::find(const T & t)
 {
    auto p = root;
    
@@ -766,14 +756,9 @@ typename BST <T> :: iterator BST<T> :: find(const T & t)
    return end();
 }
 
-/******************************************************
- ******************************************************
- ******************************************************
- *********************** B NODE ***********************
- ******************************************************
- ******************************************************
- ******************************************************/
-
+/*****************************************************************
+ **************************** B NODE *****************************
+ *****************************************************************/
  
 /******************************************************
  * BINARY NODE :: ADD LEFT
@@ -807,6 +792,7 @@ template <typename T>
 void BST<T> :: BNode :: addLeft (const T & t)
 {
    assert(pLeft == nullptr);
+
    try
    {
       BNode * pNode = new BNode(t);
@@ -826,6 +812,7 @@ template <typename T>
 void BST<T> ::BNode::addLeft(T && t)
 {
    assert(pLeft == nullptr);
+
    try
    {
       BNode * pNode = new BNode(std::move(t));
@@ -845,6 +832,7 @@ template <typename T>
 void BST <T> :: BNode :: addRight (const T & t)
 {
    assert(pRight == nullptr);
+
    try
    {
       BNode * pNode = new BNode(t);
@@ -864,6 +852,7 @@ template <typename T>
 void BST <T> ::BNode::addRight(T && t)
 {
    assert(pRight == nullptr);
+
    try
    {
       BNode * pNode = new BNode(std::move(t));
@@ -876,20 +865,16 @@ void BST <T> ::BNode::addRight(T && t)
 }
 
 
-/*************************************************
- *************************************************
- *************************************************
- ****************** ITERATOR *********************
- *************************************************
- *************************************************
- *************************************************/
+/*****************************************************************
+ *************************** ITERATOR ****************************
+ *****************************************************************/
 
 /**************************************************
  * BST ITERATOR :: INCREMENT PREFIX
  * advance by one
  *************************************************/
 template <typename T>
-typename BST <T> :: iterator & BST <T> :: iterator :: operator ++ ()
+typename BST<T>::iterator & BST<T>::iterator::operator ++ ()
 {
    // do nothing if we have nothing
    if (!pNode)
@@ -933,20 +918,12 @@ typename BST <T> :: iterator & BST <T> :: iterator :: operator ++ ()
    return *this;
 }
 
-template <typename T>
-typename BST <T> :: iterator BST <T> :: iterator :: operator ++ (int postfix)
-{
-   auto tmp = *this;
-   ++(*this);
-   return tmp;
-}
-
 /**************************************************
  * BST ITERATOR :: DECREMENT PREFIX
  * advance by one
  *************************************************/
 template <typename T>
-typename BST <T> :: iterator & BST <T> :: iterator :: operator -- ()
+typename BST<T>::iterator & BST<T>::iterator::operator -- ()
 {
    // do nothing if we have nothing
    if (!pNode)
@@ -988,14 +965,6 @@ typename BST <T> :: iterator & BST <T> :: iterator :: operator -- ()
    }
 
    return *this;
-}
-
-template <typename T>
-typename BST <T> :: iterator BST <T> :: iterator :: operator -- (int postfix)
-{
-   auto tmp = *this;
-   --(*this);
-   return tmp;
 }
 
 } // namespace custom
