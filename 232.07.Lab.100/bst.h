@@ -66,12 +66,16 @@ class BST
    friend void swap(map<KK, VV>& lhs, map<KK, VV>& rhs);
    
 private:
-   // member variables
+   //
+   // Member Variables
+   //
    class BNode;
    BNode * root;       // root node of the binary search tree
    size_t numElements; // number of elements currently in the tree
    
-   // helper methods
+   //
+   // Helper Methods
+   //
    void deleteBinaryTree(BNode * & p);
    BNode * copyBinaryTree(const BNode * pSrc);
    void assignBinaryTree(BNode * & pDest, const BNode * pSrc);
@@ -111,11 +115,11 @@ public:
    //
    iterator find(const T& t);
 
-   // 
+   //
    // Insert
    //
-   std::pair<iterator, bool> insert(const T&  t, bool keepUnique = false);
-   std::pair<iterator, bool> insert(      T&& t, bool keepUnique = false);
+   std::pair<iterator, bool> insert(const T &  t, bool keepUnique = false);
+   std::pair<iterator, bool> insert(      T && t, bool keepUnique = false);
 
    //
    // Remove
@@ -124,7 +128,7 @@ public:
    void clear() noexcept;
    void deleteNode(BNode * & pDelete, bool toRight);
 
-   // 
+   //
    // Status
    //
    bool empty()  const noexcept { return !numElements; }
@@ -389,8 +393,6 @@ BST<T> & BST<T>::operator = (BST<T> && rhs)
 template <typename T>
 BST<T> & BST<T>::operator = (const std::initializer_list<T>& il)
 {
-   clear();
-
    for (auto it : il)
    {
       insert(it);
@@ -821,7 +823,9 @@ typename BST<T>::iterator BST<T>::erase(iterator & it)
 {
    if (!it.pNode)
       return end();
+   
    deleteNode(it.pNode, true);
+   
    return ++it;
    
 //   // no children
