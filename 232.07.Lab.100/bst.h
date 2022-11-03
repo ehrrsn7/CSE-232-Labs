@@ -274,12 +274,12 @@ void BST<T>::deleteBinaryTree(BST <T> :: BNode * & p)
  * pSrc->pLeft onto pDest->pLeft
  *********************************************/
 template <class T>
-BST <T> :: BNode * BST <T> :: copyBinaryTree(const BST <T> :: BNode * pSrc)
+typename BST <T> :: BNode * BST <T> :: copyBinaryTree(const BST <T> :: BNode * pSrc)
 {
    if (!pSrc)
       return nullptr;
    
-   BNode<T> * pDest = new BNode<T>(pSrc->data);
+   BNode * pDest = new BNode(pSrc->data);
 
    pDest->pLeft = copy(pSrc->pLeft);
    if (pDest->pLeft)
@@ -307,7 +307,7 @@ void BST <T> :: assignBinaryTree(BST <T> :: BNode * & pDest, const BST <T> :: BN
    }
 
    if (!pDest)
-      pDest = new BNode<T>(pSrc->data);
+      pDest = new BNode(pSrc->data);
 
    else
       pDest->data = pSrc->data;
@@ -389,7 +389,7 @@ BST <T> & BST <T> :: operator = (const std::initializer_list<T>& il)
  * Insert a node at a given location in the tree
  ****************************************************/
 template <typename T>
-std::pair<BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
+std::pair<typename BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUnique)
 {
    BNode* pNew = new BNode(t);
 
@@ -590,7 +590,7 @@ std::pair<BST <T> :: iterator, bool> BST <T> :: insert(const T & t, bool keepUni
 }
 
 template <typename T>
-std::pair<BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
+std::pair<typename BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
 {
    auto pNew = new BNode(std::move(t));
    // *insert logic*
@@ -603,7 +603,7 @@ std::pair<BST <T> ::iterator, bool> BST <T> ::insert(T && t, bool keepUnique)
  * Remove a given node as specified by the iterator
  ************************************************/
 template <typename T>
-BST <T> ::iterator BST <T> :: erase(iterator & it)
+typename BST <T> ::iterator BST <T> :: erase(iterator & it)
 {
    // no children
    if (!it.pNode->pLeft && !it.pNode->pRight)
