@@ -42,8 +42,8 @@ public:
       test_constructMove_empty();
       test_constructMove_one();
       test_constructMove_standard();
-      // test_constructInitializer_empty();
-      // test_constructInitializer_standard();
+      test_constructInitializer_empty();
+      test_constructInitializer_standard();
 
       // Assign
       test_assign_emptyToEmpty();
@@ -58,8 +58,8 @@ public:
       test_assignMove_oneToStandard();
       test_assignMove_standardToOne();
       test_assignMove_standardToStandard();
-      // test_assignInitializer_oneToStandard();
-      // test_assignInitializer_standardToEmpty();
+      test_assignInitializer_oneToStandard();
+      test_assignInitializer_standardToEmpty();
       test_swap_emptyToEmpty();
       test_swap_standardToEmpty();
       test_swap_emptyToStandard();
@@ -85,22 +85,22 @@ public:
 
       // Insert
       test_insert_oneLeft();
-      // test_insert_oneRight();
-      // test_insert_duplicate();
-      // test_insert_keepUnique();
-      // test_insertMove_oneLeft();
-      // test_insertMove_oneRight();
-      // test_insertMove_duplicate();
-      // test_insertMove_keepUnique();
+      test_insert_oneRight();
+      test_insert_duplicate();
+      test_insert_keepUnique();
+      test_insertMove_oneLeft();
+      test_insertMove_oneRight();
+      test_insertMove_duplicate();
+      test_insertMove_keepUnique();
 
       // Remove
-      // test_erase_empty();
-      // test_erase_standardMissing();
-      // test_erase_noChildren();
-      // test_erase_oneChild();
-      // test_erase_twoChildren();
-      // test_clear_empty();
-      // test_clear_standard();
+      test_erase_empty();
+      test_erase_standardMissing();
+      test_erase_noChildren();
+      test_erase_oneChild();
+      test_erase_twoChildren();
+      test_clear_empty();
+      test_clear_standard();
 
       // Status
       test_empty_empty();
