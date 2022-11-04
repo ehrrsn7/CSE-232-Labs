@@ -130,14 +130,13 @@ public:
    
    std::pair<iterator, bool> insert(T && t)
    {
-      std::pair<iterator, bool> p(iterator(), true);
-      return p;
+      return bst.insert(std::move(t), true /* keep unique */);
    }
 
    void insert(const std::initializer_list <T> & il)
    {
       for (auto && t : il)
-         bst.insert(std::move(t), true /* keep unique */);
+         bst.insert(t, true /* keep unique */);
    }
    
    template <class Iterator>
