@@ -125,7 +125,7 @@ public:
    //
    std::pair<iterator, bool> insert(const T & t)
    {
-      return bst.insert(t);
+      return bst.insert(t, true /* keep unique */);
    }
    
    std::pair<iterator, bool> insert(T && t)
@@ -137,14 +137,14 @@ public:
    void insert(const std::initializer_list <T> & il)
    {
       for (auto && t : il)
-         insert(t);
+         bst.insert(std::move(t), true /* keep unique */);
    }
    
    template <class Iterator>
    void insert(Iterator first, Iterator last)
    {
       for (auto it = first; it != last; it++)
-         insert(*it);
+         bst.insert(*it, true /* keep unique */);
    }
 
    //
