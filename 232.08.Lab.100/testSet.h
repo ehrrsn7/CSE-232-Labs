@@ -29,45 +29,45 @@ public:
       reset();
 
       // Construct
-      // test_construct_default();
-      // test_constructCopy_empty();
-      // test_constructCopy_one();
-      // test_constructCopy_standard();
-      // test_constructMove_empty();
-      // test_constructMove_one();
-      // test_constructMove_standard();
-      // test_constructInit_empty();
-      // test_constructInit_one();
-      // test_constructInit_standard();
+      test_construct_default();
+      test_constructCopy_empty();
+      test_constructCopy_one();
+      test_constructCopy_standard();
+      test_constructMove_empty();
+      test_constructMove_one();
+      test_constructMove_standard();
+      test_constructInit_empty();
+      test_constructInit_one();
+      test_constructInit_standard();
       test_constructRange_empty();
       test_constructRange_one();
       test_constructRange_standard();
-      // test_destructor_empty();
-      // test_destructor_standard();
+      test_destructor_empty();
+      test_destructor_standard();
 
       // Assign
-      // test_assign_emptyToEmpty();
-      // test_assign_standardToEmpty();
-      // test_assign_emptyToStandard();
-      // test_assign_oneToStandard();
-      // test_assign_standardToOne();
-      // test_assign_standardToStandard();
-      // test_assignMove_emptyToEmpty();
-      // test_assignMove_standardToEmpty();
-      // test_assignMove_emptyToStandard();
-      // test_assignMove_oneToStandard();
-      // test_assignMove_standardToOne();
-      // test_assignMove_standardToStandard();
-      // test_assignInit_emptyToEmpty();
-      // test_assignInit_standardToEmpty();
-      // test_assignInit_emptyToStandard();
-      // test_assignInit_oneToStandard();
-      // test_assignInit_standardToOne();
-      // test_assignInit_standardToStandard();
-      // test_swap_emptyToEmpty();
-      // test_swap_standardToEmpty();
-      // test_swap_emptyToStandard();
-      // test_swap_standardToStandard();
+      test_assign_emptyToEmpty();
+      test_assign_standardToEmpty();
+      test_assign_emptyToStandard();
+      test_assign_oneToStandard();
+      test_assign_standardToOne();
+      test_assign_standardToStandard();
+      test_assignMove_emptyToEmpty();
+      test_assignMove_standardToEmpty();
+      test_assignMove_emptyToStandard();
+      test_assignMove_oneToStandard();
+      test_assignMove_standardToOne();
+      test_assignMove_standardToStandard();
+      test_assignInit_emptyToEmpty();
+      test_assignInit_standardToEmpty();
+      test_assignInit_emptyToStandard();
+      test_assignInit_oneToStandard();
+      test_assignInit_standardToOne();
+      test_assignInit_standardToStandard();
+      test_swap_emptyToEmpty();
+      test_swap_standardToEmpty();
+      test_swap_emptyToStandard();
+      test_swap_standardToStandard();
 
       // Iterator
       test_begin_empty();
@@ -82,53 +82,53 @@ public:
       test_iterator_dereference_standardRead();
 
       // Access
-      // test_find_empty();
-      // test_find_standardBegin();
-      // test_find_standardLast();
-      // test_find_standardMissing();
+      test_find_empty();
+      test_find_standardBegin();
+      test_find_standardLast();
+      test_find_standardMissing();
 
       // Insert
-      // test_insert_empty();
-      // test_insert_standardEnd();
-      // test_insert_standardFront();
-      // test_insert_standardMiddle();
-      // test_insert_standardDuplicate();
-      // test_insertMove_empty();
-      // test_insertMove_standardEnd();
-      // test_insertMove_standardFront();
-      // test_insertMove_standardMiddle();
-      // test_insertMove_standardDuplicate();
-      // test_insertInit_emptyInsertNone();
-      // test_insertInit_emptyInsertMany();
-      // test_insertInit_standardInsertNone();
-      // test_insertInit_standardInsertDuplicates();
-      // test_insertInit_manyInsertMany();
+      test_insert_empty();
+      test_insert_standardEnd();
+      test_insert_standardFront();
+      test_insert_standardMiddle();
+      test_insert_standardDuplicate();
+      test_insertMove_empty();
+      test_insertMove_standardEnd();
+      test_insertMove_standardFront();
+      test_insertMove_standardMiddle();
+      test_insertMove_standardDuplicate();
+      test_insertInit_emptyInsertNone();
+      test_insertInit_emptyInsertMany();
+      test_insertInit_standardInsertNone();
+      test_insertInit_standardInsertDuplicates();
+      test_insertInit_manyInsertMany();
 
       // Remove
-      // test_clear_empty();
-      // test_clear_standard();
-      // test_eraseRange_several();
-      // test_eraseIterator_empty();
-      // test_eraseIterator_standardMissing();
-      // test_eraseIterator_noChildren();
-      // test_eraseIterator_oneChild();
-      // test_eraseIterator_twoChildren();
+      test_clear_empty();
+      test_clear_standard();
+      test_eraseRange_several();
+      test_eraseIterator_empty();
+      test_eraseIterator_standardMissing();
+      test_eraseIterator_noChildren();
+      test_eraseIterator_oneChild();
+      test_eraseIterator_twoChildren();
       test_eraseValue_empty();
       test_eraseValue_standardMissing();
       test_eraseValue_noChildren();
       test_eraseValue_oneChild();
       test_eraseValue_twoChildren();
-      // test_eraseRange_standardNone();
-      // test_eraseRange_standardOne();
-      // test_eraseRange_standardMany();
-      // test_eraseRange_oneChild();
-      // test_eraseRange_twoChildren();
+      test_eraseRange_standardNone();
+      test_eraseRange_standardOne();
+      test_eraseRange_standardMany();
+      test_eraseRange_oneChild();
+      test_eraseRange_twoChildren();
 
       // Status
-      // test_empty_empty();
-      // test_empty_standard();
-      // test_size_empty();
-      // test_size_standard();
+      test_empty_empty();
+      test_empty_standard();
+      test_size_empty();
+      test_size_standard();
 
       report("Set");
    }
