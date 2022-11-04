@@ -281,9 +281,26 @@ typename BST<T>::BNode * BST<T>::copyBinaryTree(const BST<T>::BNode * pSrc)
 {
    if (!pSrc)
       return nullptr;
-   
-   BNode * pDest = new BNode(pSrc->data);
 
+   BNode * pDest = this;
+   
+   try
+   {
+      // the Son of man hath not where to lay his head
+      if (!pDest)
+         pDest = new BNode(pSrc->data);
+
+      // otherwise, asign the data over
+      else 
+         pDest->data = pSrc->data;
+   }
+   catch(const std::exception& e)
+   {
+      throw "ERROR: Unable to allocate new node";
+   }
+
+   assert(pDest);
+   
    pDest->pLeft = copyBinaryTree(pSrc->pLeft);
    if (pDest->pLeft)
       pDest->pLeft->pParent = pDest;
@@ -352,7 +369,9 @@ template <typename T>
 BST<T> & BST<T>::operator = (BST<T> && rhs)
 {
    clear();
+
    swap(rhs);
+   
    return *this;
 }
 
@@ -363,11 +382,11 @@ BST<T> & BST<T>::operator = (BST<T> && rhs)
 template <typename T>
 BST<T> & BST<T>::operator = (const std::initializer_list<T>& il)
 {
-   for (auto it : il)
-   {
+   // since we never replace il with contents from BST
+   clear();
+
+   for (auto && it : il)
       insert(it);
-      numElements++;
-   }
 
    return *this;
 }
@@ -379,409 +398,173 @@ BST<T> & BST<T>::operator = (const std::initializer_list<T>& il)
 template <typename T>
 std::pair<typename BST<T>::iterator, bool> BST<T>::insert(const T & t, bool keepUnique)
 {
-   BNode* pNew = new BNode(t);
+   std::pair<iterator, bool> pairReturn(end(), false);
 
-   // case 1
-   if (empty())
+   try
    {
-      // If we are the first node we are root and roots are always black
-      root = pNew;
-      numElements++;
-      root->isRed = false;
-
-      // quick exit
-      return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-   }
-   
-   // TODO: (delet this) avoiding our problems
-   return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-
-   // add the node
-
-   // define
-   BNode* pCurrent = root;
-   BNode* pLeft = root->pLeft;
-   BNode* pRight = root->pRight;
-   BNode* pParent = nullptr;
-
-   while (pCurrent)
-   {
-      // Check if we have children
-      
-      // Check if we move left or right
-      // Moving left
-      if (pCurrent->data < pNew->data)
-      { 
-         // Move right
-         pParent = pCurrent;
-         pCurrent = pRight;
-
-         if (pCurrent)
-         {
-            pRight = pCurrent->pRight;
-            pLeft = pCurrent->pLeft;
-         }
-
-         else
-         {
-            pRight = nullptr;
-            pLeft = nullptr;
-         }
-      }
-
-      else
+      // if we are at a trivial state (empty tree), create root
+      if (!root || empty())
       {
-         // Moving left
-         pParent = pCurrent;
-         pCurrent = pLeft;
+         assert(numElements == 0);
+         
+         root = new BNode(t);
+         numElements = 1;
+         
+         pairReturn.first = iterator(root);  // where it needs to be pointing
+         pairReturn.second = true;           // is ""?
+         return pairReturn;
+      }
 
-         if (pCurrent)
+      // otherwise
+      BNode * pNode = root;
+      
+      bool done = false;
+      while (!done)
+      {
+         // if the node is a match, then do nothing
+         if (keepUnique && t == pNode->data)
          {
-            pLeft = pCurrent->pLeft;
-            pRight = pCurrent->pRight;
+            pairReturn.first = iterator(pNode);
+            pairReturn.second = false;
+            return pairReturn;
          }
 
+         // if the center node is larger, go left
+         if (t < pNode->data)
+         {
+            // if there is a node to the left, follow it
+            if (pNode->pLeft)
+               pNode = pNode->pLeft;
+            
+            // if we are at the leaf, then create a new node
+            else
+            {
+               pNode->addLeft(t);
+               done = true; // break
+               pairReturn.first = iterator(pNode->pLeft);
+               pairReturn.second = true;
+            }
+         }
+
+         // if the center node is smaller, go right
          else
          {
-            pLeft = nullptr;
-            pRight = nullptr;
+            // if there is a node to the right, follow it
+            if (pNode->pRight)
+               pNode = pNode->pRight;
+            
+            // if we are at the leaf, then create a new node
+            else
+            {
+               pNode->addRight(t);
+               done = true; // break
+               pairReturn.first = iterator(pNode->pRight);
+               pairReturn.second = true;
+            }
          }
       }
-   }
 
-   if (pParent->data < pNew->data)
+      // we just inserted something!
+      assert(root);
+      numElements++;
+
+      // if the root moved out from under us, find it again
+      while (root->pParent)
+         root = root->pParent;
+      assert(!root->pParent);
+   }
+   catch (...)
    {
-      // Now we can add the node to the tree      
-      pParent->addRight(pNew);
-   }
-
-   else if (pParent->data == pNew->data)
-   {
-      // If it already exists then we can return without it
-      keepUnique = false;
-      return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-   }
-
-   else
-   {
-      // pParent->data > pNew->data
-      pParent->addLeft(pNew);
-   }
-
-   // re-balance the tree
-
-   // define
-   BNode* pGranny = pParent->pParent;
-
-   BNode* pAunt = nullptr;
-   if (pGranny)
-   {
-      if (pGranny->pLeft == pParent)
-         pAunt = pGranny->pRight;
-      else
-         pAunt = pGranny->pLeft;
-   }
-
-   BNode* pSibling = nullptr;
-   if (pParent)
-   {
-      if (pParent->pLeft)
-         pSibling = pRight;
-      else
-         pSibling = pLeft;
-   }
-
-   // case 3
-   if (pParent->isRed && !pGranny->isRed && pAunt->isRed)
-   {  
-      pParent->isRed = false; // black
-      pAunt->isRed = false;   // black
-      pGranny->isRed = true;  // red
+      throw "ERROR: Unable to allocate a node";
    }
    
-   // case 4a
-   if (pParent->isRed && !pGranny->isRed &&
-      !pSibling->isRed && !pAunt->isRed &&
-      pParent->pLeft == pNew &&
-	  pGranny->pLeft == pParent)
-   {
-      pParent->pParent = pGranny->pParent;
-      pGranny->pParent = pParent;
-
-      pParent->addRight(pGranny);
-      pGranny->addLeft(pSibling);
-      
-      pGranny->isRed = true;  // red
-      pParent->isRed = false; // black
-   }
-
-   // case 4b
-   if (pParent->isRed && !pGranny->isRed && 
-      !pSibling->isRed && !pAunt->isRed && 
-      pParent->pRight == pNew && 
-      pGranny->pRight == pParent)
-   {
-      pParent->pParent = pGranny->pParent;
-      pGranny->pParent = pParent;
-
-      pParent->addLeft(pGranny);
-      pGranny->addRight(pSibling);
-      
-      pGranny->isRed = true;  // red
-      pParent->isRed = false; // black
-   }
-
-   // case 4c
-   if (pParent->isRed && !pGranny->isRed &&
-	   pParent->pRight == pNew &&
-      pGranny->pLeft == pParent)
-   {
-	   pGranny->pLeft = pNew->pRight;
-	   pParent->pRight = pNew->pLeft;
-
-	   if (!pGranny->pParent)
-		   pNew->pParent = nullptr;
-	   else if (pGranny->pParent->pLeft == pGranny)
-		   pGranny->pParent->pLeft = pNew;
-	   else
-		   pGranny->pParent->pRight = pNew;
-
-	   pNew->pRight = pGranny;
-	   pNew->pLeft = pParent;
-
-	   pGranny->isRed = true;  // red
-	   pNew->isRed = false;    // black
-   }
-
-   // case 4d
-   if (pParent->isRed && !pGranny->isRed && 
-      !pSibling->isRed && !pAunt->isRed && 
-      pParent->pLeft == pNew && 
-      pGranny->pRight == pParent)
-   {
-      pGranny->pRight = pNew->pLeft;
-      pParent->pLeft = pNew->pRight;
-      
-      if (!pGranny->pParent)
-         pNew->pParent = nullptr;
-      else if (pGranny->pParent->pRight == pGranny)
-         pGranny->pParent->pRight = pNew;
-      else 
-         pGranny->pParent->pLeft = pNew;
-         
-      pNew->pLeft = pGranny;
-      pNew->pRight = pParent;
-      
-      pGranny->isRed = true;  // red
-      pNew->isRed = false;    // black
-   }
-
-   // return
-   return std::pair<iterator, bool>(iterator(pNew), keepUnique);
+   return pairReturn;
 }
 
 template <typename T>
 std::pair<typename BST<T>::iterator, bool> BST<T>::insert(T && t, bool keepUnique)
 {
-   BNode* pNew = new BNode(t);
+   std::pair<iterator, bool> pairReturn(end(), false);
 
-   // case 1
-   if (empty())
+   try
    {
-      // If we are the first node we are root and roots are always black
-      root = pNew;
-      numElements++;
-      root->isRed = false;
-
-      // quick exit
-      return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-   }
-   
-   // TODO: (delet this) avoiding our problems
-   return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-
-   // add the node
-
-   // define
-   BNode* pCurrent = root;
-   BNode* pLeft = root->pLeft;
-   BNode* pRight = root->pRight;
-   BNode* pParent = nullptr;
-
-   while (pCurrent)
-   {
-      // Check if we have children
-      
-      // Check if we move left or right
-      // Moving left
-      if (pCurrent->data < pNew->data)
+      // if we are at a trivial state (empty tree), create root
+      if (!root || empty())
       {
-         // Move right
-         pParent = pCurrent;
-         pCurrent = pRight;
-
-         if (pCurrent)
-         {
-            pRight = pCurrent->pRight;
-            pLeft = pCurrent->pLeft;
-         }
-
-         else
-         {
-            pRight = nullptr;
-            pLeft = nullptr;
-         }
-      }
-
-      else
-      {
-         // Moving left
-         pParent = pCurrent;
-         pCurrent = pLeft;
-
-         if (pCurrent)
-         {
-            pLeft = pCurrent->pLeft;
-            pRight = pCurrent->pRight;
-         }
-
-         else
-         {
-            pLeft = nullptr;
-            pRight = nullptr;
-         }
-      }
-   }
-
-   if (pParent->data < pNew->data)
-   {
-      // Now we can add the node to the tree
-      pParent->addRight(pNew);
-   }
-
-   else if (pParent->data == pNew->data)
-   {
-      // If it already exists then we can return without it
-      keepUnique = false;
-      return std::pair<iterator, bool>(iterator(pNew), keepUnique);
-   }
-
-   else
-   {
-      // pParent->data > pNew->data
-      pParent->addLeft(pNew);
-   }
-
-   // re-balance the tree
-
-   // define
-   BNode* pGranny = pParent->pParent;
-
-   BNode* pAunt = nullptr;
-   if (pGranny)
-   {
-      if (pGranny->pLeft == pParent)
-         pAunt = pGranny->pRight;
-      else
-         pAunt = pGranny->pLeft;
-   }
-
-   BNode* pSibling = nullptr;
-   if (pParent)
-   {
-      if (pParent->pLeft)
-         pSibling = pRight;
-      else
-         pSibling = pLeft;
-   }
-
-   // case 3
-   if (pParent->isRed && !pGranny->isRed && pAunt->isRed)
-   {
-      pParent->isRed = false; // black
-      pAunt->isRed = false;   // black
-      pGranny->isRed = true;  // red
-   }
-   
-   // case 4a
-   if (pParent->isRed && !pGranny->isRed &&
-      !pSibling->isRed && !pAunt->isRed &&
-      pParent->pLeft == pNew &&
-     pGranny->pLeft == pParent)
-   {
-      pParent->pParent = pGranny->pParent;
-      pGranny->pParent = pParent;
-
-      pParent->addRight(pGranny);
-      pGranny->addLeft(pSibling);
-      
-      pGranny->isRed = true;  // red
-      pParent->isRed = false; // black
-   }
-
-   // case 4b
-   if (pParent->isRed && !pGranny->isRed &&
-      !pSibling->isRed && !pAunt->isRed &&
-      pParent->pRight == pNew &&
-      pGranny->pRight == pParent)
-   {
-      pParent->pParent = pGranny->pParent;
-      pGranny->pParent = pParent;
-
-      pParent->addLeft(pGranny);
-      pGranny->addRight(pSibling);
-      
-      pGranny->isRed = true;  // red
-      pParent->isRed = false; // black
-   }
-
-   // case 4c
-   if (pParent->isRed && !pGranny->isRed &&
-      pParent->pRight == pNew &&
-      pGranny->pLeft == pParent)
-   {
-      pGranny->pLeft = pNew->pRight;
-      pParent->pRight = pNew->pLeft;
-
-      if (!pGranny->pParent)
-         pNew->pParent = nullptr;
-      else if (pGranny->pParent->pLeft == pGranny)
-         pGranny->pParent->pLeft = pNew;
-      else
-         pGranny->pParent->pRight = pNew;
-
-      pNew->pRight = pGranny;
-      pNew->pLeft = pParent;
-
-      pGranny->isRed = true;  // red
-      pNew->isRed = false;    // black
-   }
-
-   // case 4d
-   if (pParent->isRed && !pGranny->isRed &&
-      !pSibling->isRed && !pAunt->isRed &&
-      pParent->pLeft == pNew &&
-      pGranny->pRight == pParent)
-   {
-      pGranny->pRight = pNew->pLeft;
-      pParent->pLeft = pNew->pRight;
-      
-      if (!pGranny->pParent)
-         pNew->pParent = nullptr;
-      else if (pGranny->pParent->pRight == pGranny)
-         pGranny->pParent->pRight = pNew;
-      else
-         pGranny->pParent->pLeft = pNew;
+         assert(numElements == 0);
          
-      pNew->pLeft = pGranny;
-      pNew->pRight = pParent;
-      
-      pGranny->isRed = true;  // red
-      pNew->isRed = false;    // black
-   }
+         root = new BNode(std::move(t));
+         numElements = 1;
+         
+         pairReturn.first = iterator(root);  // where it needs to be pointing
+         pairReturn.second = true;           // is ""?
+         return pairReturn;
+      }
 
-   // return
-   return std::pair<iterator, bool>(iterator(pNew), keepUnique);
+      // otherwise
+      BNode * pNode = root;
+      
+      bool done = false;
+      while (!done)
+      {
+         // if the node is a match, then do nothing
+         if (keepUnique && pNode->data == t)
+         {
+            pairReturn.first = iterator(pNode);
+            pairReturn.second = false;
+            return pairReturn;
+         }
+
+         // if the center node is larger, go left
+         if (t < pNode->data)
+         {
+            // if there is a node to the left, follow it
+            if (pNode->pLeft)
+               pNode = pNode->pLeft;
+            
+            // if we are at the leaf, then create a new node
+            else
+            {
+               pNode->addLeft(std::move(t));
+               done = true; // break
+               pairReturn.first = iterator(pNode->pLeft);
+               pairReturn.second = true;
+            }
+         }
+
+         // if the center node is smaller, go right
+         else
+         {
+            // if there is a node to the right, follow it
+            if (pNode->pRight)
+               pNode = pNode->pRight;
+            
+            // if we are at the leaf, then create a new node
+            else
+            {
+               pNode->addRight(std::move(t));
+               done = true; // break
+               pairReturn.first = iterator(pNode->pRight);
+               pairReturn.second = true;
+            }
+         }
+      }
+
+      // we just inserted something!
+      assert(root);
+      numElements++;
+
+      // if the root moved out from under us, find it again
+      while (root->pParent)
+         root = root->pParent;
+      assert(!root->pParent);
+   }
+   catch (...)
+   {
+      throw "ERROR: Unable to allocate a node";
+   }
+   
+   return pairReturn;
 }
 
 /*************************************************
@@ -791,83 +574,73 @@ std::pair<typename BST<T>::iterator, bool> BST<T>::insert(T && t, bool keepUniqu
 template <typename T>
 typename BST<T>::iterator BST<T>::erase(iterator & it)
 {
-   if (!it.pNode)
+   // do nothing if there is nothing to do
+   if (it == end())
       return end();
-   
-   deleteNode(it.pNode, true);
-   
-   return ++it;
-   
-//   // no children
-//   if (!it.pNode->pLeft && !it.pNode->pRight)
-//   {
-//      if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
-//         it.pNode->pParent->pRight = nullptr;
-//      if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
-//         it.pNode->pParent->pLeft = nullptr;
-//   }
-//
-//   // one child
-//
-//   // left child
-//   else if (it.pNode->pLeft && !it.pNode->pRight)
-//   {
-//      it.pNode->pLeft->pParent = it.pNode->pParent;
-//      if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
-//         it.pNode->pParent->pRight = it.pNode->pLeft;
-//      if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
-//          it.pNode->pParent->pRight = it.pNode->pLeft;
-//   }
-//
-//   // right child
-//   else if (!it.pNode->pLeft && it.pNode->pRight)
-//   {
-//      it.pNode->pRight->pParent = it.pNode->pParent;
-//      if (it.pNode->pParent && it.pNode->pParent->pRight == it.pNode)
-//         it.pNode->pParent->pRight = it.pNode->pRight;
-//      if (it.pNode->pParent && it.pNode->pParent->pLeft == it.pNode)
-//         it.pNode->pParent->pLeft = it.pNode->pRight;
-//   }
-//
-//   // two children
-//   else if (it.pNode->pLeft && it.pNode->pRight)
-//   {
-//      // define
-//      auto pParent = it.pNode;
-//      auto pSuccessor = pParent->pRight;
-//      while (pSuccessor->pLeft)
-//         pSuccessor = pSuccessor->pLeft;
-//
-//      auto pSuccessorRight = pSuccessor->pRight;
-//      auto pSuccessorLeft = pSuccessor->pLeft;
-//
-//      // replace and delete
-//      pSuccessor->pLeft = pParent->pLeft;
-//      pSuccessor->pRight = pParent->pRight;
-//
-//      pParent->pLeft->pParent = pSuccessor;
-//      pParent->pRight->pParent = pSuccessor;
-//
-//      delete pParent;
-//
-//      // reorder
-//      if (true /*D had a right child*/)
-//      {
-//         // right child takes parent's old place
-//
-//         // what if D had left child?
-//            // set as right child's (now parent) new left child
-//            // what if right child had two children?
-//               // make it the left-most node of the right child
-//      }
-//   }
-//
-//   else
-//   {
-//      throw "unknown error occoured.";
-//   }
-//
-//   delete it.pNode;
+
+   // remember where we were
+   iterator itNext(it);
+   BNode * pDelete = it.pNode;
+
+   // if there is only one child (right) or no children (how sad!)
+   if (!pDelete->pLeft)
+   {
+      ++itNext;
+      deleteNode(pDelete, true /* go right */);
+   }
+
+   // there is only one child (left)
+   else if (!pDelete->pRight)
+   {
+      ++itNext;
+      deleteNode(pDelete, false /* go 'left' */);
+   }
+
+   // otherwise, swap places with the in-order successor
+   else
+   {
+      // find the in-order successor ('I.O.S.')
+      BNode * pIOS = pDelete->pRight;
+      while (pIOS->pLeft)
+         pIOS = pIOS->pLeft;
+
+      // the IOS must not have a right node. Now it will take pDelete's place.
+      assert(pIOS->pLeft == nullptr);
+      pIOS->pLeft = pDelete->pLeft;
+      if (pDelete->pLeft)
+         pDelete->pLeft->pParent = pIOS;
+
+      // if the IOS is not a direct right sibling, then put it in the place of pDelete
+      if (pDelete->pRight != pIOS)
+      {
+         // if the IOS has a right sibling, then it takes his place
+         if (pIOS->pRight)
+            pIOS->pRight->pParent = pIOS->pParent;
+         pIOS->pParent->pLeft = pIOS->pRight;
+
+         // make IOS' right child pDelete's right child
+         assert(pDelete->pRight != nullptr);
+         pIOS->pRight = pDelete->pRight;
+         pDelete->pRight->pParent = pIOS;
+      }
+
+      // hook up pIOS' successor
+      pIOS->pParent = pDelete->pParent;
+      if (pDelete->pParent && pDelete->pParent->pLeft == pDelete)
+         pDelete->pParent->pLeft = pIOS;
+      if (pDelete->pParent && pDelete->pParent->pRight == pDelete)
+         pDelete->pParent->pRight = pIOS;
+
+      // what if that was the root?!?!
+      if (root == pDelete)
+         root = pIOS;
+
+      itNext = iterator(pIOS);
+   }
+
+   numElements--;
+   delete pDelete;
+   return itNext;
 }
 
 /**********************************************
@@ -913,7 +686,8 @@ void BST<T>::deleteNode(BNode * & pDelete, bool toRight)
 template <typename T>
 void BST<T>::clear() noexcept
 {
-   deleteBinaryTree(root);
+   if (root)
+      deleteBinaryTree(root);
    numElements = 0;
 }
 
@@ -924,15 +698,11 @@ void BST<T>::clear() noexcept
 template <typename T>
 typename BST<T>::iterator BST<T>::begin() const noexcept
 {
-   if (empty()) return end();
-   assert(root != nullptr);
+   if (!root || empty()) return end();
    
    auto p = root;
-   if (p->pLeft)
-   {
-      while (p->pLeft)
-         p = p->pLeft;
-   }
+   while (p->pLeft)
+      p = p->pLeft;
 
    return iterator(p);
 }
