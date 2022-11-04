@@ -23,15 +23,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		33CB67E825F9C34B00C80BC3 /* testBST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testBST.h; sourceTree = "<group>"; };
-		33CB67E925F9C34B00C80BC3 /* spy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; };
-		33CB67EA25F9C34B00C80BC3 /* testSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
-		33CB67EB25F9C34B00C80BC3 /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
-		33CB67EC25F9C34B00C80BC3 /* bst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bst.h; sourceTree = "<group>"; };
+		33CB67E825F9C34B00C80BC3 /* testBST.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testBST.h; sourceTree = "<group>"; tabWidth = 3; };
+		33CB67E925F9C34B00C80BC3 /* spy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; tabWidth = 3; };
+		33CB67EA25F9C34B00C80BC3 /* testSpy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; tabWidth = 3; };
+		33CB67EB25F9C34B00C80BC3 /* unitTest.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; tabWidth = 3; };
+		33CB67EC25F9C34B00C80BC3 /* bst.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = bst.h; sourceTree = "<group>"; tabWidth = 3; };
 		C19ADCF225606C87003A88FD /* 115Key */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = 115Key; sourceTree = BUILT_PRODUCTS_DIR; };
-		C19ADCFE25606CD4003A88FD /* testSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testSet.cpp; sourceTree = "<group>"; };
-		C19ADCFF25606CD4003A88FD /* testSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testSet.h; sourceTree = "<group>"; };
-		C19ADD0025606CD4003A88FD /* set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = set.h; sourceTree = "<group>"; };
+		C19ADCFE25606CD4003A88FD /* testSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testSet.cpp; sourceTree = "<group>"; tabWidth = 3; };
+		C19ADCFF25606CD4003A88FD /* testSet.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSet.h; sourceTree = "<group>"; tabWidth = 3; };
+		C19ADD0025606CD4003A88FD /* set.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = set.h; sourceTree = "<group>"; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,7 +101,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C19ADCED25606C87003A88FD /* Build configuration list for PBXProject "115Key" */;
+			buildConfigurationList = C19ADCED25606C87003A88FD /* Build configuration list for PBXProject "LabSet" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -263,7 +263,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C19ADCED25606C87003A88FD /* Build configuration list for PBXProject "115Key" */ = {
+		C19ADCED25606C87003A88FD /* Build configuration list for PBXProject "LabSet" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C19ADCF725606C87003A88FD /* Debug */,
