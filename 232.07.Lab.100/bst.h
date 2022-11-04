@@ -79,7 +79,6 @@ private:
    void deleteBinaryTree(BNode * & p);
    BNode * copyBinaryTree(const BNode * pSrc);
    void assignBinaryTree(BNode * & pDest, const BNode * pSrc);
-   void assignBinaryTreeMove(BNode * & pDest, const BNode * pSrc);
 
 public:
    //
@@ -325,30 +324,6 @@ void BST<T>::assignBinaryTree(BST<T>::BNode * & pDest, const BST<T>::BNode * pSr
       pDest->pRight->pParent = pDest;
 }
 
-template <class T>
-void BST<T>::assignBinaryTreeMove(BST<T>::BNode * & pDest, const BST<T>::BNode * pSrc)
-{
-   if (!pSrc)
-   {
-      deleteBinaryTree(pDest);
-      return;
-   }
-
-   if (!pDest)
-      pDest = new BNode(std::move(pSrc->data));
-
-   else
-      pDest->data = std::move(pSrc->data);
-
-   assignBinaryTreeMove(pDest->pLeft, pSrc->pLeft);
-   if (pDest->pLeft)
-      pDest->pLeft->pParent = std::move(pDest);
-
-   assignBinaryTreeMove(pDest->pRight, pSrc->pRight);
-   if (pDest->pRight)
-      pDest->pRight->pParent = std::move(pDest);
-}
-
 /*****************************************************************
  * Public BST Methods
  *****************************************************************/
@@ -376,13 +351,8 @@ BST<T> & BST<T>::operator = (const BST<T> & rhs)
 template <typename T>
 BST<T> & BST<T>::operator = (BST<T> && rhs)
 {
-   assignBinaryTreeMove(root, rhs.root);
-   
-   numElements = rhs.numElements;
-   rhs.numElements = 0;
-
-   deleteBinaryTree(rhs.root);
-
+   clear();
+   swap(rhs);
    return *this;
 }
 
@@ -944,14 +914,7 @@ template <typename T>
 void BST<T>::clear() noexcept
 {
    deleteBinaryTree(root);
-   
-//   auto it = begin();
-//
-//   while (it != end())
-//      it = erase(it);
-//
-//   root = nullptr;
-//   numElements = 0;
+   numElements = 0;
 }
 
 /*****************************************************
