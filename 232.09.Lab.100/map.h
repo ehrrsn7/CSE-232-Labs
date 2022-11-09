@@ -14,7 +14,9 @@
  *        map                 : A class that represents a map
  *        map::iterator       : An iterator through a map
  * Author
- *    <your names here>
+ *    Hunter Powell
+ *    Elijah Harrison
+ *    Carol Mercau
  ************************************************************************/
 
 #pragma once
@@ -51,24 +53,22 @@ public:
    // 
    // Construct
    //
-   map() 
-   {
-   }
-   map(const map &  rhs) 
-   { 
-   }
-   map(map && rhs) 
-   { 
-   }
+   map() {}
+   map(const map &  rhs) : bst(rhs.bst) { }
+   map(map&& rhs) : { bst = std::move(rhs.bst); }
    template <class Iterator>
    map(Iterator first, Iterator last) 
    {
+      for (auto it = first; it != last; it++)
+         bst.insert(*it);
    }
    map(const std::initializer_list <Pairs>& il) 
    {
+
    }
-  ~map()         
+  ~map()
    {
+
    }
 
    //
