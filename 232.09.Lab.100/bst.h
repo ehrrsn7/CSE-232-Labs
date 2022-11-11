@@ -39,7 +39,6 @@ class TestSet;
 
 namespace custom
 {
-
     template <class TT>
     class set;
     template <class KK, class VV>

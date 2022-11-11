@@ -32,23 +32,23 @@ public:
    //
    
    // Default Constructor: call the T1, T2 default constructors
-   pair(const C& c = C())
+   pair(const C & c = C())
        : first(     ), second(      ), compare(c) {}
    // Non-Default Constructor: call the T1, T2 copy constructors
-   pair(const T1 & first, const T2 & second, const C& c = C())
+   pair(const T1 & first, const T2 & second, const C & c = C())
        : first(first), second(second), compare(c) {}
-   pair(const T1& first, T2 && second, const C& c = C())
+   pair(const T1 & first, T2 && second, const C & c = C())
       : first(first), second(std::move(second)), compare(c) {}
-   pair(const T1& first, const C& c = C())
+   pair(const T1 & first, const C& c = C())
       : first(first), second(), compare(c) {}
    // Copy Constructor: call the T1, T2 copy constructors
-   pair(const pair <T1, T2> & rhs, const C& c = C())
+   pair(const pair <T1, T2> & rhs, const C & c = C())
        : first(rhs.first), second(rhs.second), compare(c) {}
    // Non-Default Move Constructor: call the T1, T2 move constructors
-   pair(T1 && first, T2 && second, const C& c = C())
+   pair(T1 && first, T2 && second, const C & c = C())
        : first(std::move(first)), second(std::move(second)), compare(c) {}
    // Move Constructor: call the T1, T2 move constructors
-   pair(pair <T1, T2> && rhs, const C& c = C())
+   pair(pair <T1, T2> && rhs, const C & c = C())
        : first(std::move(rhs.first)), second(std::move(rhs.second)), compare(c) {}
 
    //
@@ -81,7 +81,7 @@ public:
    // Relative: only the first will be compared
    //
 
-   bool operator <  (const pair & rhs) const { return compare(first, rhs.first); }
+   bool operator <  (const pair & rhs) const { return compare(first, rhs.first);        }
    bool operator >  (const pair & rhs) const { return compare(rhs.first, first);        }
    bool operator >= (const pair & rhs) const { return !(compare(first, rhs.first));     }
    bool operator <= (const pair & rhs) const { return !(compare(rhs.first, first));     }

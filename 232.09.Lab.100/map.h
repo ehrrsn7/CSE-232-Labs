@@ -46,44 +46,40 @@ class map
 {
    friend ::TestMap; // give unit tests access to the privates
    template <class KK, class VV>
-   friend void swap(map<KK, VV>& lhs, map<KK, VV>& rhs);
+   friend void swap(map<KK, VV> & lhs, map<KK, VV> & rhs);
 public:
    using Pairs = custom::pair<K, V>;
 
    // 
    // Construct
    //
-   map() {}
+   map() { }
    map(const map &  rhs) : bst(rhs.bst) { }
-   map(map&& rhs) : { bst = std::move(rhs.bst); }
+   map(map && rhs) : bst(std::move(rhs.bst)) { }
+   map(const std::initializer_list <Pairs> & il) { *this = il; }
+  ~map() { }
+
    template <class Iterator>
-   map(Iterator first, Iterator last) 
-   {
-      for (auto it = first; it != last; it++)
-         bst.insert(*it);
-   }
-   map(const std::initializer_list <Pairs>& il) 
-   {
-
-   }
-  ~map()
-   {
-
-   }
+   map(Iterator first, Iterator last) { insert(first, last); }
 
    //
    // Assign
    //
    map & operator = (const map & rhs) 
    {
+      bst = rhs.bst;
       return *this;
    }
+
    map & operator = (map && rhs)
    {
+      bst = std::move(rhs.bst);
       return *this;
    }
+
    map & operator = (const std::initializer_list <Pairs> & il)
    {
+      bst = il;
       return *this;
    }
    
@@ -91,54 +87,51 @@ public:
    // Iterator
    //
    class iterator;
-   iterator begin() 
-   { 
-      return iterator();
-   }
-   iterator end() 
-   { 
-      return iterator();    
-   }
+   iterator begin() { return bst.begin(); }
+   iterator end()   { return bst.end(); }
 
    // 
    // Access
    //
    const V & operator [] (const K & k) const;
          V & operator [] (const K & k);
-   const V & at (const K& k) const;
-         V & at (const K& k);
-   iterator    find(const K & k)
-   {
-      return iterator ();
-   }
+   const V & at (const K & k) const;
+         V & at (const K & k);
+   iterator find(const K & k) { return bst.find(k); }
 
    //
    // Insert
    //
-   custom::pair<typename map::iterator, bool> insert(Pairs && rhs)
-   {
-      return make_pair(iterator(), false);
-   }
    custom::pair<typename map::iterator, bool> insert(const Pairs & rhs)
    {
-      return make_pair(iterator(), false);
+      auto returnPair = bst.insert(rhs, true /* keep unique */);
+      return custom::pair<typename map::iterator, bool>(returnPair.first, returnPair.second);
+   }
+   
+   custom::pair<typename map::iterator, bool> insert(Pairs && rhs)
+   {
+      auto returnPair = bst.insert(std::move(rhs), true /* keep unique */);
+      return custom::pair<typename map::iterator, bool>(returnPair.first, returnPair.second);
    }
 
    template <class Iterator>
    void insert(Iterator first, Iterator last)
    {
+      for (auto it = first; it != last; it++)
+         bst.insert(*it, true /* keep unique */);
    }
+
    void insert(const std::initializer_list <Pairs>& il)
    {
+      for (auto && t : il)
+         bst.insert(t, true /* keep unique */);
    }
 
    //
    // Remove
    //
-   void clear() noexcept
-   {
-   }
-   size_t erase(const K& k);
+   void clear() noexcept { bst.clear(); }
+   size_t erase(const K & k);
    iterator erase(iterator it);
    iterator erase(iterator first, iterator last);
 
@@ -284,9 +277,16 @@ void swap(map <K, V>& lhs, map <K, V>& rhs)
  * Erase one element
  ****************************************************/
 template <typename K, typename V>
-size_t map<K, V>::erase(const K& k)
+size_t map<K, V>::erase(const K & k)
 {
-   return size_t(99);
+   auto it = find(k);
+
+   if (it == end())
+      return 0;
+
+   erase(it);
+   
+   return 1;
 }
 
 /*****************************************************
@@ -296,7 +296,12 @@ size_t map<K, V>::erase(const K& k)
 template <typename K, typename V>
 typename map<K, V>::iterator map<K, V>::erase(map<K, V>::iterator first, map<K, V>::iterator last)
 {
-   return iterator();
+   auto it = first;
+
+   while (it != last)
+      it = erase(it);
+
+   return it;
 }
 
 /*****************************************************
@@ -306,7 +311,7 @@ typename map<K, V>::iterator map<K, V>::erase(map<K, V>::iterator first, map<K, 
 template <typename K, typename V>
 typename map<K, V>::iterator map<K, V>::erase(map<K, V>::iterator it)
 {
-   return iterator();
+   return bst.erase(it.it);
 }
 
 }; //  namespace custom

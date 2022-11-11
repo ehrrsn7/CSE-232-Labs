@@ -31,13 +31,13 @@ public:
       // Construct
       test_construct_default();
       test_constructCopy_empty();
-      report("Map");
-      return;
       test_constructCopy_one();
       test_constructCopy_standard();
       test_constructMove_empty();
       test_constructMove_one();
       test_constructMove_standard();
+      report("Map");
+      return;
       test_constructInit_empty();
       test_constructInit_one();
       test_constructInit_standard();
@@ -46,6 +46,7 @@ public:
       test_constructRange_standard();
       test_destructor_empty();
       test_destructor_standard();
+      
 
       // Assign
       test_assign_emptyToEmpty();
