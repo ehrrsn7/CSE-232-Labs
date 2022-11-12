@@ -36,8 +36,6 @@ public:
       test_constructMove_empty();
       test_constructMove_one();
       test_constructMove_standard();
-      report("Map");
-      return;
       test_constructInit_empty();
       test_constructInit_one();
       test_constructInit_standard();
@@ -123,7 +121,7 @@ public:
       test_size_empty();
       test_size_standard();
 
-      
+      report("Map");
    }
 
    /***************************************

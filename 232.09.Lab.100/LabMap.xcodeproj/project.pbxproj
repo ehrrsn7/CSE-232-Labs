@@ -23,17 +23,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C17B5A3A258CEC97003A646A /* spy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; };
-		C17B5A3C258CEE97003A646A /* testSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
-		C197811B25922C35005D41C5 /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
-		C197811D259231D2005D41C5 /* testBST.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testBST.h; sourceTree = "<group>"; };
-		C1BB6121258C147C00CECE13 /* testPair.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testPair.h; sourceTree = "<group>"; };
+		C17B5A3A258CEC97003A646A /* spy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C17B5A3C258CEE97003A646A /* testSpy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C197811B25922C35005D41C5 /* unitTest.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; tabWidth = 3; };
+		C197811D259231D2005D41C5 /* testBST.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testBST.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1BB6121258C147C00CECE13 /* testPair.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testPair.h; sourceTree = "<group>"; tabWidth = 3; };
 		C1EF7372256716F8003DA99A /* Lab10 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lab10; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1EF737F25671750003DA99A /* testMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testMap.h; sourceTree = "<group>"; };
-		C1EF738025671751003DA99A /* bst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bst.h; sourceTree = "<group>"; };
-		C1EF738125671751003DA99A /* testMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testMap.cpp; sourceTree = "<group>"; };
-		C1EF738225671753003DA99A /* map.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = map.h; sourceTree = "<group>"; };
-		C1EF738325671754003DA99A /* pair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pair.h; sourceTree = "<group>"; };
+		C1EF737F25671750003DA99A /* testMap.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testMap.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF738025671751003DA99A /* bst.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = bst.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF738125671751003DA99A /* testMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testMap.cpp; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF738225671753003DA99A /* map.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = map.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF738325671754003DA99A /* pair.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = pair.h; sourceTree = "<group>"; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C1EF736D256716F8003DA99A /* Build configuration list for PBXProject "Lab10" */;
+			buildConfigurationList = C1EF736D256716F8003DA99A /* Build configuration list for PBXProject "LabMap" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -265,7 +265,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C1EF736D256716F8003DA99A /* Build configuration list for PBXProject "Lab10" */ = {
+		C1EF736D256716F8003DA99A /* Build configuration list for PBXProject "LabMap" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C1EF7377256716F8003DA99A /* Debug */,
