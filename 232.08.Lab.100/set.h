@@ -46,15 +46,11 @@ public:
    //
    set() { }
    set(const set & rhs) : bst(rhs.bst) { }
-   set(set && rhs) { bst = std::move(rhs.bst); }
-   set(const std::initializer_list <T> & il) { bst = il; }
+   set(set && rhs) : bst(std::move(rhs.bst)) { }
+   set(const std::initializer_list <T> & il) { insert(il); }
    
    template <class Iterator>
-   set(Iterator first, Iterator last) 
-   { 
-      for (auto it = first; it != last; it++)
-         bst.insert(*it);
-   }
+   set(Iterator first, Iterator last) { insert(first, last); }
 
   ~set() { }
 
