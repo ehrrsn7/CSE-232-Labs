@@ -14,16 +14,14 @@
 #include <vector>
 #include "vector.h"
 #include "unitTest.h"
-
+#include "spy.h"
 
 #include <cassert>
 #include <memory>
 
-#include <iostream>
-
 class TestVector : public UnitTest
 {
-   
+
 public:
    void run()
    {
@@ -45,7 +43,7 @@ public:
       test_destructor_empty();
       test_destructor_standard();
       test_destructor_partiallyFilled();
-      
+
       // Assign
       test_assign_empty();
       test_assign_sameSize();
@@ -111,7 +109,7 @@ public:
       test_shrink_toEmpty();
       test_shrink_standard();
       test_shrink_twoExtraSlots();
-
+      
       // Status
       test_size_empty();
       test_size_full();
@@ -129,114 +127,124 @@ public:
    
    // default constructor, no allocations
    void test_construct_default()
-   {
-      // setup
-      custom::vector<int> v;
-      std::allocator<custom::vector<int>> alloc;
-      v.data = (int*)0xBAADF00D;
-      v.numCapacity = 99;
-      v.numElements = 99;
+   {  // setup
+      Spy::reset();
       // exercise
-      alloc.construct(&v); // call the constructor by itself
+      custom::vector<Spy> v;
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
       assertEmptyFixture(v);
    }  // teardown
-   
+
    // allocate space for zero
    void test_construct_sizeZero()
-   {
-      // setup
-      custom::vector<int> v;
-      std::allocator<custom::vector<int>> alloc;
-      v.data = (int*)0xBAADF00D;
-      v.numCapacity = 99;
-      v.numElements = 99;
+   {  // setup
+      Spy::reset();
       // exercise
-      alloc.construct(&v, 0); // call the constructor by itself
+      custom::vector<Spy> v(0);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
       assertEmptyFixture(v);
-      
    }  // teardown
-   
+
    // allocate space for four
    void test_construct_sizeFour()
-   {
-      // setup
-      custom::vector<int> v;
-      std::allocator<custom::vector<int>> alloc;
-      v.data = (int*)0xBAADF00D;
-      v.numCapacity = 99;
-      v.numElements = 99;
+   {  // setup
+      Spy::reset();
       // exercise
-      alloc.construct(&v, 4); // call the constructor by itself
+      custom::vector<Spy> v(4);
       // verify
+      assertUnit(Spy::numDefault() == 4);   // default-construct [00,00,00,00]
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 00 | 00 | 00 | 00 |
       //    +----+----+----+----+
       assertUnit(v.data != nullptr);
-      
-      
       if (v.data)
-      {
-         assertUnit(v.data[0] == 0);
-         assertUnit(v.data[1] == 0);
-         assertUnit(v.data[2] == 0);
-         assertUnit(v.data[3] == 0);
-         
+      { 
+         assertUnit(v.data[0] == Spy());
+         assertUnit(v.data[1] == Spy());
+         assertUnit(v.data[2] == Spy());
+         assertUnit(v.data[3] == Spy());
       }
-      
       assertUnit(v.numElements == 4);
       assertUnit(v.numCapacity == 4);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // allocate space for four and fill with 10
    void test_construct_sizeFourFill()
-   {
-      // setup
-      custom::vector<int> v;
-      std::allocator<custom::vector<int>> alloc;
-      v.data = (int*)0xBAADF00D;
-      v.numCapacity = 99;
-      v.numElements = 99;
+   {  // setup
+      Spy s(99);
+      Spy::reset();
       // exercise
-      alloc.construct(&v, 4, 99); // call the constructor by itself
+      custom::vector<Spy> v(4, s);
       // verify
+      assertUnit(Spy::numCopy() == 4);        // copy-construct [99,99,99,99]
+      assertUnit(Spy::numAlloc() == 4);       // allocate [99,99,99,99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 99 | 99 | 99 | 99 |
       //    +----+----+----+----+
       assertUnit(v.data != nullptr);
-      
       if (v.data)
-      {
-         assertUnit(v.data[0] == 99);
-         assertUnit(v.data[1] == 99);
-         assertUnit(v.data[2] == 99);
-         assertUnit(v.data[3] == 99);
+      { 
+         assertUnit(v.data[0] == Spy(99));
+         assertUnit(v.data[1] == Spy(99));
+         assertUnit(v.data[2] == Spy(99));
+         assertUnit(v.data[3] == Spy(99));
       }
       assertUnit(v.numElements == 4);
       assertUnit(v.numCapacity == 4);
-      
       // teardown
       teardownStandardFixture(v);
    }
-   
+
+
    /***************************************
     * DESTRUCTOR
     ***************************************/
-   
+
    // destructor of an empty vector
    void test_destructor_empty()
-   {
+   {  // setup
       {
-         custom::vector<int> v;
-      }
-      // If your code crashes here, your destructor is probably broken.
-   }
-   
+         custom::vector<Spy> v;
+         Spy::reset();
+      } // exercise
+      // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+   }  // verify
+
    // destructor of a 4-element collection
    void test_destructor_standard()
    {  // setup
@@ -245,12 +253,18 @@ public:
          //    +----+----+----+----+
          //    | 26 | 49 | 67 | 89 |
          //    +----+----+----+----+
-         custom::vector<int> v;
+         custom::vector<Spy> v;
          setupStandardFixture(v);
+         Spy::reset();
       } // exercise
-      
+      // verify
+      assertUnit(Spy::numDestructor() == 4); // destructor for [26,49,67,89]
+      assertUnit(Spy::numDelete() == 4);     // delete [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAssign() == 0);
    }
-   
+
    // destructor of a 2-element, 4-capacity collection
    void test_destructor_partiallyFilled()
    {  // setup
@@ -259,13 +273,19 @@ public:
          //    +----+----+----+----+
          //    | 26 | 49 |    |    |
          //    +----+----+----+----+
-         custom::vector<int> v;
-         v.data = new int[4];
-         v.data[0] = 99;
-         v.data[1] = 99;
+         custom::vector<Spy> v;
+         v.data = v.alloc.allocate(4);
+         v.alloc.construct(&v.data[0], Spy(99));
+         v.alloc.construct(&v.data[1], Spy(99));
          v.numElements = 2;
          v.numCapacity = 4;
+         Spy::reset();
       }  // exercise
+      assertUnit(Spy::numDestructor() == 2); // destructor for [26,49]
+      assertUnit(Spy::numDelete() == 2);     // delete [26,49]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAssign() == 0);
    }
    
    /***************************************
@@ -275,10 +295,20 @@ public:
    // copy constructor of an empty vector
    void test_constructCopy_empty()
    {  // setup
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(vSrc);
+      custom::vector<Spy> vDest(vSrc);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       assertEmptyFixture(vDest);
    }  // teardown
@@ -290,11 +320,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(vSrc);
+      custom::vector<Spy> vDest(vSrc);
       // verify
+      assertUnit(Spy::numCopy() == 4);     // copy constructor for [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 4);    // allocate [26,49,67,89]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertUnit(vSrc.data != vDest.data);
       //      0    1    2    3
       //    +----+----+----+----+
@@ -318,22 +358,32 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
-      vSrc.data = new int[4];
-      vSrc.data[0] = 26;
-      vSrc.data[1] = 49;
+      custom::vector<Spy> vSrc;
+      vSrc.data = vSrc.alloc.allocate(4);
+      vSrc.alloc.construct(&vSrc.data[0], Spy(26));
+      vSrc.alloc.construct(&vSrc.data[1], Spy(49));
       vSrc.numElements = 2;
       vSrc.numCapacity = 4;
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(vSrc);
+      custom::vector<Spy> vDest(vSrc);
       // verify
+      assertUnit(Spy::numCopy() == 2);     // copy constructor [26,49]
+      assertUnit(Spy::numAlloc() == 2);    // allocate [26,49]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
       assertUnit(vSrc.data != nullptr);
-      assertUnit(vSrc.data[0] == 26);
-      assertUnit(vSrc.data[1] == 49);
+      assertUnit(vSrc.data[0] == Spy(26));
+      assertUnit(vSrc.data[1] == Spy(49));
       assertUnit(vSrc.numElements == 2);
       assertUnit(vSrc.numCapacity == 4);
       //      0    1
@@ -341,13 +391,11 @@ public:
       //    | 26 | 49 |
       //    +----+----+
       assertUnit(vDest.data != nullptr);
-      
       if (vDest.data)
       {
-         assertUnit(vDest.data[0] == 26);
-         assertUnit(vDest.data[1] == 49);
+         assertUnit(vDest.data[0] == Spy(26));
+         assertUnit(vDest.data[1] == Spy(49));
       }
-      
       assertUnit(vDest.numElements == 2);
       assertUnit(vDest.numCapacity == 2);
       // teardown
@@ -362,10 +410,20 @@ public:
    // move constructor of an empty vector
    void test_constructMove_empty()
    {  // setup
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(std::move(vSrc));
+      custom::vector<Spy> vDest(std::move(vSrc));
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       assertEmptyFixture(vDest);
    }  // teardown
@@ -377,12 +435,22 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
-      int * p = vSrc.data;
+      Spy * p = vSrc.data;
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(std::move(vSrc));
+      custom::vector<Spy> vDest(std::move(vSrc));
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
@@ -402,28 +470,36 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
-      vSrc.data = new int[4];\
-      vSrc.data[0] = 26;
-      vSrc.data[1] = 49;
+      custom::vector<Spy> vSrc;
+      vSrc.data = vSrc.alloc.allocate(4);
+      vSrc.alloc.construct(&vSrc.data[0], Spy(26));
+      vSrc.alloc.construct(&vSrc.data[1], Spy(49));
       vSrc.numElements = 2;
       vSrc.numCapacity = 4;
+      Spy::reset();
       // exercise
-      custom::vector<int> vDest(std::move(vSrc));
+      custom::vector<Spy> vDest(std::move(vSrc));
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
       assertUnit(vDest.data != nullptr);
-      
-      if (vDest.data && vDest.numElements == 2)
+      if (vDest.data)
       {
-         assertUnit(vDest.data[0] == 26);
-         assertUnit(vDest.data[1] == 49);
+         assertUnit(vDest.data[0] == Spy(26));
+         assertUnit(vDest.data[1] == Spy(49));
       }
-      
       assertUnit(vDest.numElements == 2);
       assertUnit(vDest.numCapacity == 4);
       // teardown
@@ -437,20 +513,40 @@ public:
    
    // empty initialization list
    void test_constructInit_empty()
-   {
+   {  // setup
+      Spy::reset();
       // exercise
-      custom::vector<int> v{};
+      custom::vector<Spy> v{};
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
    
    // use the initialization list to create the standard fixture
    void test_constructInit_standard()
    {  // setup
-      std::initializer_list<int> l{26,49,67,89};
+      std::initializer_list<Spy> l{Spy(26),Spy(49),Spy(67),Spy(89)};
+      Spy::reset();
       // exercise
-      custom::vector<int> v(l); // same as vector<Spy> v{...}
+      custom::vector<Spy> v(l); // same as vector<Spy> v{...}
       // verify
+      assertUnit(Spy::numCopy() == 4);       // copy-construct [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 4);      // allocate [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -467,17 +563,29 @@ public:
    // resize an empty vector with zero elements
    void test_resize_emptyZero()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.resize(0);
       // verify
+      assertUnit(v.numCapacity == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
    
    // start with an empty vector and resize to four
    void test_resize_emptyFourDefault()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.resize(4);
       // verify
@@ -485,6 +593,17 @@ public:
       //    +----+----+----+----+
       //    | 00 | 00 | 00 | 00 |
       //    +----+----+----+----+
+      assertUnit(v.numCapacity == 4);
+      assertUnit(v.numElements == 4);
+      assertUnit(Spy::numDefault() == 4);    // default [00,00,00,00]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       // teardown
       teardownStandardFixture(v);
    }
@@ -492,9 +611,11 @@ public:
    // resize four elements with the provided value
    void test_resize_emptyFourValue()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy s(99);
+      Spy::reset();
       // exercise
-      v.resize(4, 99);
+      v.resize(4, s);
       // verify
       //      0    1    2    3
       //    +----+----+----+----+
@@ -502,6 +623,15 @@ public:
       //    +----+----+----+----+
       assertUnit(v.numCapacity == 4);
       assertUnit(v.numElements == 4);
+      assertUnit(Spy::numCopy() == 4);     // copy [99,99,99,99]
+      assertUnit(Spy::numAlloc() == 4);    // allocate [99,99,99,99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       // teardown
       teardownStandardFixture(v);
    }
@@ -513,11 +643,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.resize(0);
       // verify
+      assertUnit(Spy::numDestructor() == 4);  // destroy [26,49,67,89]
+      assertUnit(Spy::numDelete() == 4);      // free [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    |    |    |    |    |
@@ -535,24 +675,32 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.resize(6);
       // verify
+      assertUnit(Spy::numCopyMove() == 4);  // copy-move [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 4);// destory now-empty [26,49,67,89]
+      assertUnit(Spy::numDefault() == 2);   // create new [00,00]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numCopy() == 0);      // copy 
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3    4    5
       //    +----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 89 | 00 | 00 |
       //    +----+----+----+----+----+----+
       assertUnit(v.numCapacity == 6);
       assertUnit(v.numElements == 6);
-      
       if (v.data)
       {
-         assertUnit(v.data[4] == int());
-         assertUnit(v.data[5] == int());
+         assertUnit(v.data[4] == Spy());
+         assertUnit(v.data[5] == Spy());
       }
-      
       v.numCapacity = 4;
       v.numElements = 4;
       assertStandardFixture(v);
@@ -567,23 +715,33 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy s(99);
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
-      v.resize(6, 99);
+      v.resize(6, s);
+      // verify
+      assertUnit(Spy::numCopyMove() == 4);  // copy-move [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 4);// destroy old and moved [26,49,67,89]
+      assertUnit(Spy::numCopy() == 2);      // copy-create [99,99]
+      assertUnit(Spy::numAlloc() == 2);     // allocate [99,99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3    4    5
       //    +----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 89 | 99 | 99 |
       //    +----+----+----+----+----+----+
       assertUnit(v.numCapacity == 6);
       assertUnit(v.numElements == 6);
-      
-      if (v.data && v.numElements == 6)
+      if (v.data && v.numElements >= 6)
       {
-         assertUnit(v.data[4] == 99);
-         assertUnit(v.data[5] == 99);
+         assertUnit(v.data[4] == Spy(99));
+         assertUnit(v.data[5] == Spy(99));
       }
-      
       v.numCapacity = 4;
       v.numElements = 4;
       assertStandardFixture(v);
@@ -594,17 +752,29 @@ public:
    // reserve zero on an empty vector
    void test_reserve_emptyZero()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.reserve(0);
       // verify
+      assertUnit(v.numCapacity == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
    
    // increase the capacity on an empty vector to ten
    void test_reserve_emptyTen()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.reserve(10);
       // verify
@@ -614,10 +784,19 @@ public:
       //    +----+----+----+----+----+----+----+----+----+----+
       assertUnit(v.numCapacity == 10);
       assertUnit(v.numElements == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // try to decrease the capacity. Nothing changes!
    void test_reserve_fourZero()
    {  // setup
@@ -625,13 +804,23 @@ public:
       //    +----+----+----+----+
       //    |    |    |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
       v.numElements = 0;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.reserve(0);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    |    |    |    |    |
@@ -649,13 +838,23 @@ public:
       //    +----+----+----+----+
       //    |    |    |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
       v.numElements = 0;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.reserve(4);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    |    |    |    |    |
@@ -673,13 +872,23 @@ public:
       //    +----+----+----+----+
       //    |    |    |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
       v.numElements = 0;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.reserve(10);
       // verify
+      assertUnit(Spy::numCopyMove() == 0);   
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3    4    5    6    7    8    9
       //    +----+----+----+----+----+----+----+----+----+----+
       //    |    |    |    |    |    |    |    |    |    |    |
@@ -697,11 +906,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.reserve(0);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -719,16 +938,26 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.reserve(10);
       // verify
+      assertUnit(v.numCapacity == 10);
+      assertUnit(Spy::numCopyMove() == 4);   // copy-move [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 4); // destroy the now-empty [26,49,67,89]
+      assertUnit(Spy::numCopy() == 0);  
+      assertUnit(Spy::numAlloc() == 0); 
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3    4    5    6    7    8    9
       //    +----+----+----+----+----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 89 |    |    |    |    |    |    |
       //    +----+----+----+----+----+----+----+----+----+----+
-      assertUnit(v.numCapacity == 10);
       v.numCapacity = 4;
       assertStandardFixture(v);
       // teardown
@@ -738,10 +967,20 @@ public:
    // shrink an empty fixture
    void test_shrink_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.shrink_to_fit();
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
    
@@ -752,13 +991,23 @@ public:
       //    +----+----+----+----+
       //    |    |    |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
       v.numElements = 0;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.shrink_to_fit();
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
    
@@ -769,11 +1018,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.shrink_to_fit();
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
@@ -786,20 +1045,32 @@ public:
       //    +----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 89 |    |    |
       //    +----+----+----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[6];
-      v.data[0] = 26;
-      v.data[1] = 49;
-      v.data[2] = 67;
-      v.data[3] = 89;
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(6);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
+      v.alloc.construct(&v.data[2], Spy(67));
+      v.alloc.construct(&v.data[3], Spy(89));
       v.numElements = 4;
       v.numCapacity = 6;
+      Spy::reset();
       // exercise
-      std::vector<int> vS{int(26),int(49),int(67),int(89)};
+      std::vector<Spy> vS{Spy(26),Spy(49),Spy(67),Spy(89)};
       vS.reserve(6);
+      Spy::reset();
       vS.shrink_to_fit();
+      Spy::reset();
       v.shrink_to_fit();
       // verify
+      assertUnit(Spy::numCopy() == 4);      // copy [26,49,67,89] to new buffer
+      assertUnit(Spy::numAlloc() == 4);     // allocate [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 4);// destroy [26,49,67,89] from old buffer
+      assertUnit(Spy::numDelete() == 4);    // delete [26,49,67,89]
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
@@ -808,11 +1079,11 @@ public:
    /***************************************
     * SIZE EMPTY CAPACITY
     ***************************************/
-   
+
    // size of an empty vector
    void test_size_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       // exercise
       size_t size = v.size();
       // verify
@@ -827,7 +1098,7 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
       // exercise
       size_t size = v.size();
@@ -841,7 +1112,7 @@ public:
    // empty vector empty?
    void test_empty_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       // exercise
       bool empty = v.empty();
       // verify
@@ -856,7 +1127,7 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
       // exercise
       bool empty = v.empty();
@@ -866,11 +1137,11 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // size of an empty vector
    void test_capacity_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       // exercise
       size_t capacity = v.capacity();
       // verify
@@ -885,7 +1156,7 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
       v.numElements = 3;
       // exercise
@@ -897,19 +1168,223 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    /***************************************
-    * ASSIGN COPY
+    * SWAP
+    ***************************************/
+
+    // swap empty vectors
+   void test_swap_empty()
+   {  // setup
+      custom::vector<Spy> vSrc;
+      custom::vector<Spy> vDest;
+      Spy::reset();
+      // exercise
+      vDest.swap(vSrc);
+      // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertEmptyFixture(vSrc);
+      assertEmptyFixture(vDest);
+   }  // teardown
+
+   // swap when source and destination are same size
+   void test_swap_sameSize()
+   {  // setup
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      custom::vector<Spy> vSrc;
+      setupStandardFixture(vSrc);
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 99 | 99 | 99 | 99 |
+      //    +----+----+----+----+
+      custom::vector<Spy> vDest;
+      setupStandardFixture(vDest);
+      vDest.data[0] = Spy(99);
+      vDest.data[1] = Spy(99);
+      vDest.data[2] = Spy(99);
+      vDest.data[3] = Spy(99);
+      Spy::reset();
+      // exercise
+      vDest.swap(vSrc);
+      // verify
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numAssign() == 0);   
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 99 | 99 | 99 | 99 |
+      //    +----+----+----+----+
+      assertUnit(vSrc.numCapacity == 4);
+      assertUnit(vSrc.numElements == 4);
+      assertUnit(vSrc.data != nullptr);
+      if (vSrc.data)
+      {
+         assertUnit(vSrc.data[0] == Spy(99));
+         assertUnit(vSrc.data[1] == Spy(99));
+         assertUnit(vSrc.data[2] == Spy(99));
+         assertUnit(vSrc.data[3] == Spy(99));
+      }
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      assertStandardFixture(vDest);
+      // teardown
+      teardownStandardFixture(vSrc);
+      teardownStandardFixture(vDest);
+   }
+
+   // swap when the destination is smaller than the source
+   void test_swap_rightBigger()
+   {  // setup
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      custom::vector<Spy> vSrc;
+      setupStandardFixture(vSrc);
+      //      0    1
+      //    +----+----+
+      //    | 99 | 99 |
+      //    +----+----+
+      custom::vector<Spy> vDest;
+      vDest.data = vDest.alloc.allocate(2);
+      vDest.alloc.construct(&vDest.data[0], Spy(99));
+      vDest.alloc.construct(&vDest.data[1], Spy(99));
+      vDest.numElements = 2;
+      vDest.numCapacity = 2;
+      Spy::reset();
+      // exercise
+      vDest.swap(vSrc);
+      // verify
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numCopy() == 0);       
+      assertUnit(Spy::numAlloc() == 0);      
+      assertUnit(Spy::numDestructor() == 0); 
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      //      0    1
+      //    +----+----+
+      //    | 99 | 99 |
+      //    +----+----+
+      assertUnit(vSrc.numCapacity == 2);
+      assertUnit(vSrc.numElements == 2);
+      assertUnit(vSrc.data != nullptr);
+      if (vSrc.data)
+      {
+         assertUnit(vSrc.data[0] == Spy(99));
+         assertUnit(vSrc.data[1] == Spy(99));
+      }
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      assertStandardFixture(vDest);
+      // teardown
+      teardownStandardFixture(vSrc);
+      teardownStandardFixture(vDest);
+   }
+
+   // swap when the destination is bigger than the source
+   void test_swap_leftBigger()
+   {  // setup
+      //      0    1
+      //    +----+----+
+      //    | 99 | 99 |
+      //    +----+----+
+      custom::vector<Spy> vSrc;
+      vSrc.data = vSrc.alloc.allocate(2);
+      vSrc.alloc.construct(&vSrc.data[0], Spy(99));
+      vSrc.alloc.construct(&vSrc.data[1], Spy(99));
+      vSrc.numElements = 2;
+      vSrc.numCapacity = 2;
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      custom::vector<Spy> vDest;
+      setupStandardFixture(vDest);
+      Spy::reset();
+      // exercise
+      vDest.swap(vSrc);
+      // verify
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numAssign() == 0); 
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numDelete() == 0);    
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      //      0    1    2    3
+      //    +----+----+----+----+
+      //    | 26 | 49 | 67 | 89 |
+      //    +----+----+----+----+
+      assertStandardFixture(vSrc);
+      //      0    1
+      //    +----+----+
+      //    | 99 | 99 |
+      //    +----+----+
+      assertUnit(vDest.numCapacity == 2);
+      assertUnit(vDest.numElements == 2);
+      assertUnit(vDest.data != nullptr);
+      if (vDest.data)
+      {
+         assertUnit(vDest.data[0] == Spy(99));
+         assertUnit(vDest.data[1] == Spy(99));
+      }
+      // teardown
+      teardownStandardFixture(vSrc);
+      teardownStandardFixture(vDest);
+   }
+
+
+   /***************************************
+    * ASSIGN 
     ***************************************/
    
    // assignment when there is nothing to copy
    void test_assign_empty()
    {  // setup
-      custom::vector<int> vSrc;
-      custom::vector<int> vDest;
+      custom::vector<Spy> vSrc;
+      custom::vector<Spy> vDest;
+      Spy::reset();
       // exercise
       vDest = vSrc;
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       assertEmptyFixture(vDest);
    }  // teardown
@@ -921,22 +1396,32 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 99 | 99 | 99 | 99 |
       //    +----+----+----+----+
-      custom::vector<int> vDest;
+      custom::vector<Spy> vDest;
       setupStandardFixture(vDest);
-      vDest.data[0] = int(99);
-      vDest.data[1] = int(99);
-      vDest.data[2] = int(99);
-      vDest.data[3] = int(99);
+      vDest.data[0] = Spy(99);
+      vDest.data[1] = Spy(99);
+      vDest.data[2] = Spy(99);
+      vDest.data[3] = Spy(99);
+      Spy::reset();
       // exercise
       vDest = vSrc;
       // verify
-      assertUnit(vDest.data != vSrc.data);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numAssign() == 4);      // assign [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -959,22 +1444,32 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
       //      0    1
       //    +----+----+
       //    | 99 | 99 |
       //    +----+----+
-      custom::vector<int> vDest;
-      vDest.data = new int[2];
-      vDest.data[0] = 99;
-      vDest.data[1] = 99;
+      custom::vector<Spy> vDest;
+      vDest.data = vDest.alloc.allocate(2);
+      vDest.alloc.construct(&vDest.data[0], Spy(99));
+      vDest.alloc.construct(&vDest.data[1], Spy(99));
       vDest.numElements = 2;
       vDest.numCapacity = 2;
+      Spy::reset();
       // exercise
       vDest = vSrc;
       // verify
-      assertUnit(vDest.data != vSrc.data);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numCopy() == 4);       // copy [26,49,67,89] from src to dest
+      assertUnit(Spy::numAlloc() == 4);      // the copy involves a new buffer for [26,49,67,89]
+      assertUnit(Spy::numDestructor() == 2); // destroy [99,99]
+      assertUnit(Spy::numDelete() == 2);     // delete [99,99]
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -997,25 +1492,32 @@ public:
       //    +----+----+
       //    | 99 | 99 |
       //    +----+----+
-      custom::vector<int> vSrc;
-      vSrc.data = new int[2];
-      vSrc.data[0] = 99;
-      vSrc.data[1] = 99;
+      custom::vector<Spy> vSrc;
+      vSrc.data = vSrc.alloc.allocate(2);
+      vSrc.alloc.construct(&vSrc.data[0], Spy(99));
+      vSrc.alloc.construct(&vSrc.data[1], Spy(99));
       vSrc.numElements = 2;
       vSrc.numCapacity = 2;
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vDest;
+      custom::vector<Spy> vDest;
       setupStandardFixture(vDest);
+      Spy::reset();
       // exercise
-      std::vector<int> vS{int(99), int(99)};
-      std::vector<int> vD{int(26), int(49), int(67), int(89)};
-      vD = vS;
       vDest = vSrc;
       // verify
-      assertUnit(vDest.data != vSrc.data);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numAssign() == 2);     // assign [99,99] into dest
+      assertUnit(Spy::numDestructor() == 2); // destroy [67,89]
+      assertUnit(Spy::numDelete() == 2);     // delete [67,89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1
       //    +----+----+
       //    | 99 | 99 |
@@ -1023,8 +1525,11 @@ public:
       assertUnit(vSrc.numCapacity == 2);
       assertUnit(vSrc.numElements == 2);
       assertUnit(vSrc.data != nullptr);
-      assertUnit(vSrc.data[0] == int(99));
-      assertUnit(vSrc.data[1] == int(99));
+      if (vSrc.data)
+      {
+         assertUnit(vSrc.data[0] == Spy(99));
+         assertUnit(vSrc.data[1] == Spy(99));
+      }
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 99 | 99 |    |    |
@@ -1032,26 +1537,34 @@ public:
       assertUnit(vDest.numCapacity == 4);
       assertUnit(vDest.numElements == 2);
       assertUnit(vDest.data != nullptr);
-      
       if (vDest.data)
       {
-         assertUnit(vDest.data[0] == int(99));
-         assertUnit(vDest.data[1] == int(99));
+         assertUnit(vDest.data[0] == Spy(99));
+         assertUnit(vDest.data[1] == Spy(99));
       }
-      
       // teardown
       teardownStandardFixture(vSrc);
       teardownStandardFixture(vDest);
    }
-   
+
    // assignment when there is nothing to copy
    void test_assignMove_empty()
    {  // setup
-      custom::vector<int> vSrc;
-      custom::vector<int> vDest;
+      custom::vector<Spy> vSrc;
+      custom::vector<Spy> vDest;
+      Spy::reset();
       // exercise
       vDest = std::move(vSrc);
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(vSrc);
       assertEmptyFixture(vDest);
    }  // teardown
@@ -1063,24 +1576,33 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 99 | 99 | 99 | 99 |
       //    +----+----+----+----+
-      custom::vector<int> vDest;
+      custom::vector<Spy> vDest;
       setupStandardFixture(vDest);
-      vDest.data[0] = 99;
-      vDest.data[1] = 99;
-      vDest.data[2] = 99;
-      vDest.data[3] = 99;
+      vDest.data[0] = Spy(99);
+      vDest.data[1] = Spy(99);
+      vDest.data[2] = Spy(99);
+      vDest.data[3] = Spy(99);
+      Spy::reset();
       // exercise
       vDest = std::move(vSrc);
       // verify
-      assertUnit(vDest.data != vSrc.data);
-      assertUnit(vSrc.numCapacity == 4);
-      assertUnit(vSrc.numElements == 0);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numDestructor() == 4);  // destroy [99,99,99,99]
+      assertUnit(Spy::numDelete() == 4);      // delete  [99,99,99,99]
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertEmptyFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -1098,24 +1620,33 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
       //      0    1
       //    +----+----+
       //    | 99 | 99 |
       //    +----+----+
-      custom::vector<int> vDest;
-      vDest.data = new int[2];
-      vDest.data[0] = 99;
-      vDest.data[1] = 99;
+      custom::vector<Spy> vDest;
+      vDest.data = vDest.alloc.allocate(2);
+      vDest.alloc.construct(&vDest.data[0], Spy(99));
+      vDest.alloc.construct(&vDest.data[1], Spy(99));
       vDest.numElements = 2;
       vDest.numCapacity = 2;
+      Spy::reset();
       // exercise
       vDest = std::move(vSrc);
       // verify
-      assertUnit(vDest.data != vSrc.data);
-      assertUnit(vSrc.numCapacity == 4);
-      assertUnit(vSrc.numElements == 0);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numDestructor() == 2); // destroy [99,99]
+      assertUnit(Spy::numDelete() == 2);     // delete [99,99]
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);     
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertEmptyFixture(vSrc);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
@@ -1133,177 +1664,32 @@ public:
       //    +----+----+
       //    | 99 | 99 |
       //    +----+----+
-      custom::vector<int> vSrc;
-      vSrc.data = new int[2];
-      vSrc.data[0] = 99;
-      vSrc.data[1] = 99;
+      custom::vector<Spy> vSrc;
+      vSrc.data = vSrc.alloc.allocate(2);
+      vSrc.alloc.construct(&vSrc.data[0], Spy(99));
+      vSrc.alloc.construct(&vSrc.data[1], Spy(99));
       vSrc.numElements = 2;
       vSrc.numCapacity = 2;
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vDest;
+      custom::vector<Spy> vDest;
       setupStandardFixture(vDest);
+      Spy::reset();
       // exercise
       vDest = std::move(vSrc);
       // verify
-      assertUnit(vDest.data != vSrc.data);
-      //      0    1
-      //    +----+----+
-      //    | 99 | 99 |
-      //    +----+----+
-      assertUnit(vDest.numCapacity == 4);
-      assertUnit(vDest.numElements == 2);
-      assertUnit(vDest.data != nullptr);
-      if (vDest.data)
-      {
-         assertUnit(vDest.data[0] == 99);
-         assertUnit(vDest.data[1] == 99);
-      }
-      assertUnit(vSrc.numCapacity == 2);
-      assertUnit(vSrc.numElements == 0);
-      // teardown
-      teardownStandardFixture(vSrc);
-      teardownStandardFixture(vDest);
-   }
-
-   /***************************************
-    * SWAP
-    ***************************************/
-
-    // swap empty vectors
-   void test_swap_empty()
-   {  // setup
-      custom::vector<int> vSrc;
-      custom::vector<int> vDest;
-      // exercise
-      vDest.swap(vSrc);
-      // verify
-      assertEmptyFixture(vSrc);
-      assertEmptyFixture(vDest);
-   }  // teardown
-
-   // swap when source and destination are same size
-   void test_swap_sameSize()
-   {  // setup
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      custom::vector<int> vSrc;
-      setupStandardFixture(vSrc);
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 99 | 99 | 99 | 99 |
-      //    +----+----+----+----+
-      custom::vector<int> vDest;
-      setupStandardFixture(vDest);
-      vDest.data[0] = 99;
-      vDest.data[1] = 99;
-      vDest.data[2] = 99;
-      vDest.data[3] = 99;
-      // exercise
-      vDest.swap(vSrc);
-      // verify
-      assertUnit(vDest.data != vSrc.data);
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 99 | 99 | 99 | 99 |
-      //    +----+----+----+----+
-      assertUnit(vSrc.numCapacity == 4);
-      assertUnit(vSrc.numElements == 4);
-      assertUnit(vSrc.data != nullptr);
-      if (vSrc.data)
-      {
-         assertUnit(vSrc.data[0] == 99);
-         assertUnit(vSrc.data[1] == 99);
-         assertUnit(vSrc.data[2] == 99);
-         assertUnit(vSrc.data[3] == 99);
-      }
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      assertStandardFixture(vDest);
-      // teardown
-      teardownStandardFixture(vSrc);
-      teardownStandardFixture(vDest);
-   }
-
-   // swap when the destination is smaller than the source
-   void test_swap_rightBigger()
-   {  // setup
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      custom::vector<int> vSrc;
-      setupStandardFixture(vSrc);
-      //      0    1
-      //    +----+----+
-      //    | 99 | 99 |
-      //    +----+----+
-      custom::vector<int> vDest;
-      vDest.data = new int[2];
-      vDest.data[0] = 99;
-      vDest.data[1] = 99;
-      vDest.numElements = 2;
-      vDest.numCapacity = 2;
-      // exercise
-      vDest.swap(vSrc);
-      // verify
-      assertUnit(vDest.data != vSrc.data);
-      //      0    1
-      //    +----+----+
-      //    | 99 | 99 |
-      //    +----+----+
-      assertUnit(vSrc.numCapacity == 2);
-      assertUnit(vSrc.numElements == 2);
-      assertUnit(vSrc.data != nullptr);
-      if (vSrc.data)
-      {
-         assertUnit(vSrc.data[0] == 99);
-         assertUnit(vSrc.data[1] == 99);
-      }
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      assertStandardFixture(vDest);
-      // teardown
-      teardownStandardFixture(vSrc);
-      teardownStandardFixture(vDest);
-   }
-
-   // swap when the destination is bigger than the source
-   void test_swap_leftBigger()
-   {  // setup
-      //      0    1
-      //    +----+----+
-      //    | 99 | 99 |
-      //    +----+----+
-      custom::vector<int> vSrc;
-      vSrc.data = new int[2];
-      vSrc.data[0] = 99;
-      vSrc.data[1] = 99;
-      vSrc.numElements = 2;
-      vSrc.numCapacity = 2;
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      custom::vector<int> vDest;
-      setupStandardFixture(vDest);
-      // exercise
-      vDest.swap(vSrc);
-      // verify
-      assertUnit(vDest.data != vSrc.data);
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 | 89 |
-      //    +----+----+----+----+
-      assertStandardFixture(vSrc);
+      assert(vDest.data != vSrc.data);
+      assertUnit(Spy::numDestructor() == 4); // destroy [26,49,67,89]
+      assertUnit(Spy::numDelete() == 4);     // delete [26,49,67,89]
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1
       //    +----+----+
       //    | 99 | 99 |
@@ -1313,20 +1699,19 @@ public:
       assertUnit(vDest.data != nullptr);
       if (vDest.data)
       {
-         assertUnit(vDest.data[0] == 99);
-         assertUnit(vDest.data[1] == 99);
+         assertUnit(vDest.data[0] == Spy(99));
+         assertUnit(vDest.data[1] == Spy(99));
       }
+      assertEmptyFixture(vSrc);
       // teardown
       teardownStandardFixture(vSrc);
       teardownStandardFixture(vDest);
    }
 
-
-
    /***************************************
     * SUBSCRIPT
     ***************************************/
-   
+
    // read one element using square bracket
    void test_subscript_read()
    {  // setup
@@ -1334,26 +1719,30 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
-      const custom::vector<int> v(vSrc);
-      int value(99);
+      const custom::vector<Spy> v(vSrc);
+      Spy value(99);
+      Spy::reset();
       // exercise
-      
-      if (v.data)
-      {
-         value = v[1];
-      }
-      
+      value = v[1];
       // verify
-      
-      assertUnit(value == int(49));
+      assertUnit(Spy::numAssign() == 1);    // from assigning [49] into value
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(value == Spy(49));
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(vSrc);
    }
-   
-   
+
+
    // write one element using square brackets
    void test_subscript_write()
    {  // setup
@@ -1361,23 +1750,33 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      int value(99);
+      Spy value(99);
+      Spy::reset();
       // exercise
       v[1] = value;
       // verify
+      assertUnit(Spy::numAssign() == 1);  // 99 is set to v[1]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 99 | 67 | 89 |
       //    +----+----+----+----+
-      assertUnit(v.data[1] == int(99));
-      v.data[1] = int(49);
+      assertUnit(v.data[1] == Spy(99));
+      v.data[1] = Spy(49);
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // verify that we can look at the front of a fector
    void test_front_read()
    {  // setup
@@ -1385,24 +1784,29 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
-      const custom::vector<int> v(vSrc);
-      int value(99);
+      const custom::vector<Spy> v(vSrc);
+      Spy value(99);
+      Spy::reset();
       // exercise
-      
-      if (v.data)
-      {
-         value = v.front();
-      }
-      
+      value = v.front();
       // verify
-      assertUnit(value == int(26));
-//      assertStandardFixture(v);
+      assertUnit(Spy::numAssign() == 1);    // from assigning [26] into value
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(value == Spy(26));
+      assertStandardFixture(v);
       // teardown
       teardownStandardFixture(vSrc);
    }
-   
+
    // write to the front
    void test_front_write()
    {  // setup
@@ -1410,23 +1814,37 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      int value(99);
+      Spy value(99);
+      Spy::reset();
       // exercise
       v.front() = value;
       // verify
+      assertUnit(Spy::numAssign() == 1);  // 99 is set to v[1]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 99 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      assertUnit(v.data[0] == int(99));
-      v.data[0] = int(26);
+      assertUnit(v.data != nullptr);
+      if (v.data)
+      { 
+         assertUnit(v.data[0] == Spy(99));
+         v.data[0] = Spy(26);
+      }
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // verify we can look at the back of a vector
    void test_back_read()
    {  // setup
@@ -1434,20 +1852,25 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> vSrc;
+      custom::vector<Spy> vSrc;
       setupStandardFixture(vSrc);
-      const custom::vector<int> v(vSrc);
-      int value(99);
+      const custom::vector<Spy> v(vSrc);
+      Spy value(99);
+      Spy::reset();
       // exercise
-      
-      if (v.data)
-      {
-         value = v.back();
-      }
-      
+      value = v.back();
       // verify
-      assertUnit(value == int(89));
-//      assertStandardFixture(v);
+      assertUnit(Spy::numAssign() == 1);    // from assigning [26] into value
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(value == Spy(89));
+      assertStandardFixture(v);
       // teardown
       teardownStandardFixture(vSrc);
    }
@@ -1457,34 +1880,58 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      int value(99);
+      Spy value(99);
+      Spy::reset();
       // exercise
       v.back() = value;
       // verify
+      assertUnit(Spy::numAssign() == 1);  // 99 is set to v[1]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 99 |
       //    +----+----+----+----+
-      assertUnit(v.data[3] == int(99));
-      v.data[3] = int(89);
+      assertUnit(v.data != nullptr);
+      if (v.data)
+      {
+         assertUnit(v.data[3] == Spy(99));
+         v.data[3] = Spy(89);
+      }
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    /***************************************
     * POP BACK
     ***************************************/
 
-    // remove an element from an empty vector
+   // remove an element from an empty vector
    void test_popback_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.pop_back();
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
 
@@ -1495,11 +1942,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.pop_back();
       // verify
+      assertUnit(Spy::numDestructor() == 1);   // destroy [89]
+      assertUnit(Spy::numDelete() == 1);       // delete [89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 |    |
@@ -1509,9 +1966,9 @@ public:
       assertUnit(v.data != nullptr);
       if (v.data != nullptr)
       {
-         assertUnit(v.data[0] == 26);
-         assertUnit(v.data[1] == 49);
-         assertUnit(v.data[2] == 67);
+         assertUnit(v.data[0] == Spy(26));
+         assertUnit(v.data[1] == Spy(49));
+         assertUnit(v.data[2] == Spy(67));
       }
       // teardown
       teardownStandardFixture(v);
@@ -1524,15 +1981,25 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
-      v.data[0] = 26;
-      v.data[1] = 49;
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
       v.numElements = 2;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.pop_back();
       // verify
+      assertUnit(Spy::numDestructor() == 1);   // destroy [49]
+      assertUnit(Spy::numDelete() == 1);       // delete [49]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 |    |    |    |
@@ -1542,7 +2009,7 @@ public:
       assertUnit(v.data != nullptr);
       if (v.data != nullptr)
       {
-         assertUnit(v.data[0] == 26);
+         assertUnit(v.data[0] == Spy(26));
       }      // teardown
       teardownStandardFixture(v);
    }
@@ -1554,13 +2021,23 @@ public:
    // clear an empty collection
    void test_clear_empty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
+      Spy::reset();
       // exercise
       v.clear();
       // verify
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       assertEmptyFixture(v);
    }  // teardown
-   
+
    // clear when there are elements
    void test_clear_full()
    {  // setup
@@ -1568,11 +2045,21 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
       v.clear();
       // verify
+      assertUnit(Spy::numDestructor() == 4);   // destroy [26,49,67,89]
+      assertUnit(Spy::numDelete() == 4);       // delete [26,49,67,89]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    |    |    |    |    |
@@ -1591,15 +2078,25 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 |    |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
-      v.data[0] = 26;
-      v.data[1] = 49;
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
       v.numElements = 2;
       v.numCapacity = 4;
+      Spy::reset();
       // exercise
       v.clear();
       // verify
+      assertUnit(Spy::numDestructor() == 2);   // destroy [26,49]
+      assertUnit(Spy::numDelete() == 2);       // delete [26,49]
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    |    |    |    |    |
@@ -1610,7 +2107,7 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    
    /***************************************
     * PUSH BACK
@@ -1619,29 +2116,34 @@ public:
    // add an element to the back when empty
    void test_pushback_empty()
    {  // setup
-      custom::vector<int> v;
-      int s(99);
+      custom::vector<Spy> v;
+      Spy s(99);
+      Spy::reset();
       // exercise
-      std::vector<int> v2;
-      v2.push_back(s);
       v.push_back(s);
-      //      0
+      // verify
+      assertUnit(Spy::numCopy() == 1);           // copy [99]
+      assertUnit(Spy::numAlloc() == 1);          // allocate [99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      //      0    
       //    +----+
       //    | 99 |
       //    +----+
       assertUnit(v.data != nullptr);
-      
       if (v.data)
-      {
-         assertUnit(v.data[0] == int(99));
-      }
-      
+         assertUnit(v.data[0] == Spy(99));
       assertUnit(v.numCapacity == 1);
       assertUnit(v.numElements == 1);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // add an element to the back when there is room. No reallocation
    void test_pushback_excessCapacity()
    {  // setup
@@ -1649,20 +2151,27 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 |    |
       //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
-      v.data[0] = 26;
-      v.data[1] = 49;
-      v.data[2] = 67;
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
+      v.alloc.construct(&v.data[2], Spy(67));
       v.numElements = 3;
       v.numCapacity = 4;
-      int s(89);
+      Spy s(89);
+      Spy::reset();
       // exercise
-      std::vector<int> v2{int(26), int(49), int(67)};
-      v2.reserve(4);
-      v2.push_back(s);
       v.push_back(s);
       // verify
+      assertUnit(Spy::numCopy() == 1);           // copy [99]
+      assertUnit(Spy::numAlloc() == 1);          // allocate [99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 99 |
@@ -1671,100 +2180,113 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // add an element to the back when there is not room. Capacity should double
    void test_pushback_requireReallocate()
    {  // setup
-      //      0    1    2
+      //      0    1    2  
       //    +----+----+----+
       //    | 26 | 49 | 67 |
       //    +----+----+----+
-      custom::vector<int> v;
-      v.data = new int[3];
-      v.data[0] = 26;
-      v.data[1] = 49;
-      v.data[2] = 67;
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(3);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
+      v.alloc.construct(&v.data[2], Spy(67));
       v.numElements = 3;
       v.numCapacity = 3;
-      int s(99);
+      Spy s(99);
+      Spy::reset();
       // exercise
-      std::vector<int> v2{ int(26), int(49), int(67) };
-      v2.push_back(s);
       v.push_back(s);
       // verify
-      //      0    1    2    3    4    5
+      assertUnit(Spy::numCopyMove() == 3);       // move [26,49,67] 
+      assertUnit(Spy::numDestructor() == 3);     // destroy empty [26,49,67]
+      assertUnit(Spy::numCopy() == 1);           // copy [99]
+      assertUnit(Spy::numAlloc() == 1);          // allocate [99]
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      //      0    1    2    3    4    5   
       //    +----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 99 |    |    |
       //    +----+----+----+----+----+----+
       assertUnit(v.data != nullptr);
-      
-      if (v.data)
+      if (v.data && v.numElements >= 4)
       {
-         assertUnit(v.data[0] == int(26));
-         assertUnit(v.data[1] == int(49));
-         assertUnit(v.data[2] == int(67));
-         if (v.numElements > 3)
-            assertUnit(v.data[3] == int(99));
+         assertUnit(v.data[0] == Spy(26));
+         assertUnit(v.data[1] == Spy(49));
+         assertUnit(v.data[2] == Spy(67));
+         assertUnit(v.data[3] == Spy(99));
       }
-      
       assertUnit(v.numCapacity == 6);
       assertUnit(v.numElements == 4);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // add an element to the back when empty
    void test_pushback_moveEmpty()
    {  // setup
-      custom::vector<int> v;
-      int s(99);
+      custom::vector<Spy> v;
+      Spy s(99);
+      Spy::reset();
       // exercise
-      std::vector<int> v2;
-      int s2(99);
-      v2.push_back(std::move(s2));
       v.push_back(std::move(s));
       // verify
-      //      0
+      assertUnit(Spy::numCopyMove() == 1);       // copy-move [99]
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);       
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      //      0    
       //    +----+
       //    | 99 |
       //    +----+
       assertUnit(v.data != nullptr);
-      
       if (v.data)
-      {
-         assertUnit(v.data[0] == int(99));
-      }
-      
+         assertUnit(v.data[0] == Spy(99));
       assertUnit(v.numCapacity == 1);
       assertUnit(v.numElements == 1);
+      assertUnit(s == Spy());
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // add an element to the back when there is room. No reallocation
    void test_pushback_moveExcessCapacity()
    {  // setup
-      //      0    1    2    3
-      //    +----+----+----+----+
-      //    | 26 | 49 | 67 |    |
-      //    +----+----+----+----+
-      custom::vector<int> v;
-      v.data = new int[4];
-      
-      v.data[0] = 26;
-      v.data[1] = 49;
-      v.data[2] = 67;
-      
+     //      0    1    2    3
+     //    +----+----+----+----+
+     //    | 26 | 49 | 67 |    |
+     //    +----+----+----+----+
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(4);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
+      v.alloc.construct(&v.data[2], Spy(67));
       v.numElements = 3;
       v.numCapacity = 4;
-      int s(89);
+      Spy s(89);
+      Spy::reset();
       // exercise
-      std::vector<int> v2{ int(26), int(49), int(67) };
-      int s2(89);
-      v2.reserve(4);
-      v2.push_back(std::move(s2));
       v.push_back(std::move(s));
       // verify
+      assertUnit(Spy::numCopyMove() == 1);   // copy-move [89] 
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);         
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 99 |
@@ -1773,50 +2295,54 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // add an element to the back when there is not room. Capacity should double
    void test_pushback_moveRequireReallocate()
    {  // setup
-      //      0    1    2
+      //      0    1    2  
       //    +----+----+----+
       //    | 26 | 49 | 67 |
       //    +----+----+----+
-      custom::vector<int> v;
-      v.data = new int[3];
-      
-      v.data[0] = 26;
-      v.data[1] = 49;
-      v.data[2] = 67;
-      
+      custom::vector<Spy> v;
+      v.data = v.alloc.allocate(3);
+      v.alloc.construct(&v.data[0], Spy(26));
+      v.alloc.construct(&v.data[1], Spy(49));
+      v.alloc.construct(&v.data[2], Spy(67));
       v.numElements = 3;
       v.numCapacity = 3;
-      int s(99);
+      Spy s(99);
+      Spy::reset();
       // exercise
-      std::vector<int> v2{ int(26), int(49), int(67) };
-      int s2(99);
-      v2.push_back(std::move(s2));
       v.push_back(std::move(s));
       // verify
-      //      0    1    2    3    4    5
+      assertUnit(Spy::numCopyMove() == 4);       // move [26,49,67] and [99]
+      assertUnit(Spy::numDestructor() == 3);     // destroy empty [26,49,67]
+      assertUnit(Spy::numCopy() == 0);           
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
+      //      0    1    2    3    4    5   
       //    +----+----+----+----+----+----+
       //    | 26 | 49 | 67 | 99 |    |    |
       //    +----+----+----+----+----+----+
       assertUnit(v.data != nullptr);
-      if (v.data)
+      if (v.data && v.numElements >= 4)
       {
-         assertUnit(v.data[0] == int(26));
-         assertUnit(v.data[1] == int(49));
-         assertUnit(v.data[2] == int(67));
-         if (v.numElements > 3)
-            assertUnit(v.data[3] == int(99));
+         assertUnit(v.data[0] == Spy(26));
+         assertUnit(v.data[1] == Spy(49));
+         assertUnit(v.data[2] == Spy(67));
+         assertUnit(v.data[3] == Spy(99));
       }
       assertUnit(v.numCapacity == 6);
       assertUnit(v.numElements == 4);
       // teardown
       teardownStandardFixture(v);
    }
-   
-   
+
+
    /***************************************
     * ITERATOR
     ***************************************/
@@ -1824,14 +2350,14 @@ public:
    // empty iterator
    void test_iterator_beginEmpty()
    {  // setup
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       // exercise
-      custom::vector<int>::iterator it = v.begin();
+      custom::vector<Spy>::iterator it = v.begin();
       // verify
       assertUnit(it.p == nullptr);
       assertEmptyFixture(v);
    }  // teardown
-   
+  
    // iterator the first element
    void test_iterator_beginFull()
    {  // setup
@@ -1839,27 +2365,28 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
       // exercise
-      custom::vector<int>::iterator it = v.begin();
+      custom::vector<Spy>::iterator it = v.begin();
       // verify
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //      it
-      assertUnit(it.p == &(v.data[0]));
-      if (it.p)
+      assertUnit(v.data != nullptr);
+      assertUnit(it.p != nullptr);
+      if (v.data && it.p)
       {
+         assertUnit(it.p == &(v.data[0]));
          assertUnit(*(it.p) == 26);
       }
-      
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // iterator the end() method
    void test_iterator_endFull()
    {  // setup
@@ -1867,10 +2394,10 @@ public:
       //    +----+----+----+----+
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
       // exercise
-      custom::vector<int>::iterator it = v.end();
+      custom::vector<Spy>::iterator it = v.end();
       // verify
       //      0    1    2    3
       //    +----+----+----+----+
@@ -1882,7 +2409,7 @@ public:
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // iterator use the decrement operator
    void test_iterator_incrementFull()
    {  // setup
@@ -1891,9 +2418,9 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //           it
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      custom::vector<int>::iterator it;
+      custom::vector<Spy>::iterator it;
       it.p = &(v.data[1]);
       // exercise
       ++it;
@@ -1903,12 +2430,12 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //                it
-      assertUnit(*(it.p) == int(67));
+      assertUnit(*(it.p) == Spy(67));
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // iterator use the decrement operator
    void test_iterator_dereferenceReadFull()
    {  // setup
@@ -1917,20 +2444,20 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //           it
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      custom::vector<int>::iterator it;
+      custom::vector<Spy>::iterator it;
       it.p = &(v.data[1]);
       // exercise
-      int value = *it;
+      Spy value = *it;
       // verify
-      assertUnit(value == int(49));
+      assertUnit(value == Spy(49));
       assertUnit(it.p == &(v.data[1]));
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-   
+
    // iterator change a value
    void test_iterator_dereferenceUpdate()
    {  // setup
@@ -1939,25 +2466,29 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //           it
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
-      custom::vector<int>::iterator it;
+      custom::vector<Spy>::iterator it;
       it.p = &(v.data[1]);
       // exercise
-      *it = int(99);
+      *it = Spy(99);
       // verify
       //      0    1    2    3
       //    +----+----+----+----+
       //    | 26 | 99 | 67 | 89 |
       //    +----+----+----+----+
       //           it
-      assertUnit(v.data[0] == int(26));
-      assertUnit(v.data[1] == int(99));
-      assertUnit(v.data[2] == int(67));
-      assertUnit(v.data[3] == int(89));
+      assertUnit(v.data != nullptr);
+      if (v.data)
+      {
+         assertUnit(v.data[0] == Spy(26));
+         assertUnit(v.data[1] == Spy(99));
+         assertUnit(v.data[2] == Spy(67));
+         assertUnit(v.data[3] == Spy(89));
+         assertUnit(it.p == &(v.data[1]));
+      }
       assertUnit(v.numElements == 4);
       assertUnit(v.numCapacity == 4);
-      assertUnit(it.p == &(v.data[1]));
       // teardown
       teardownStandardFixture(v);
    }
@@ -1965,10 +2496,20 @@ public:
    // create a default iterator
    void test_iterator_construct_default()
    {  // setup
+      Spy::reset();
       // exercise
-      custom::vector<int>::iterator it;
+      custom::vector<Spy>::iterator it;
       // verify
       assertUnit(it.p == nullptr);
+      assertUnit(Spy::numCopyMove() == 0); 
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
    }  // teardown
 
    // create an iterator at a specific location in the vector
@@ -1979,17 +2520,27 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //                it
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
-      custom::vector<int>::iterator it(v.data + 2);
+      custom::vector<Spy>::iterator it(v.data + 2);
       // verify
       assertUnit(it.p == v.data + 2);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
-
+   
    // create an iterator based on a vector and an index
    void test_iterator_construct_index()
    {  // setup
@@ -1998,18 +2549,27 @@ public:
       //    | 26 | 49 | 67 | 89 |
       //    +----+----+----+----+
       //                it
-      custom::vector<int> v;
+      custom::vector<Spy> v;
       setupStandardFixture(v);
+      Spy::reset();
       // exercise
-      custom::vector<int>::iterator it(2, v);
+      custom::vector<Spy>::iterator it(2, v);
       // verify
       assertUnit(it.p == v.data + 2);
+      assertUnit(Spy::numCopyMove() == 0);
+      assertUnit(Spy::numDestructor() == 0);
+      assertUnit(Spy::numCopy() == 0);
+      assertUnit(Spy::numAlloc() == 0);
+      assertUnit(Spy::numDelete() == 0);
+      assertUnit(Spy::numDefault() == 0);
+      assertUnit(Spy::numNondefault() == 0);
+      assertUnit(Spy::numAssign() == 0);
+      assertUnit(Spy::numAssignMove() == 0);
       assertStandardFixture(v);
       // teardown
       teardownStandardFixture(v);
    }
 
-   
    /*************************************************************
     * SETUP STANDARD FIXTURE
     *      0    1    2    3
@@ -2017,16 +2577,15 @@ public:
     *    | 26 | 49 | 67 | 89 |
     *    +----+----+----+----+
     *************************************************************/
-   void setupStandardFixture(custom::vector<int>& v)
+   void setupStandardFixture(custom::vector<Spy>& v)
    {
-      
       try
       {
-         v.data = new int[4];
-         v.data[0] = 26;
-         v.data[1] = 49;
-         v.data[2] = 67;
-         v.data[3] = 89;
+         v.data = v.alloc.allocate(4);
+         v.alloc.construct(&v.data[0], Spy(26));
+         v.alloc.construct(&v.data[1], Spy(49));
+         v.alloc.construct(&v.data[2], Spy(67));
+         v.alloc.construct(&v.data[3], Spy(89));
          v.numElements = 4;
          v.numCapacity = 4;
       }
@@ -2035,7 +2594,7 @@ public:
          assert(false);
       }
    }
-   
+
    /*************************************************************
     * VERIFY STANDARD FIXTURE PARAMETERS
     *      0    1    2    3
@@ -2043,30 +2602,25 @@ public:
     *    | 26 | 49 | 67 | 89 |
     *    +----+----+----+----+
     *************************************************************/
-   void assertStandardFixtureParameters(const custom::vector<int>& v, int line, const char* function)
+   void assertStandardFixtureParameters(const custom::vector<Spy>& v, int line, const char* function)
    {
       assertIndirect(v.data != nullptr);
       assertIndirect(v.numCapacity == 4);
       assertIndirect(v.numElements == 4);
-      
-      
-      if (v.data != nullptr)
+
+      if (v.data != nullptr && v.numElements >= 4)
       {
-         if (v.numElements > 0)
-            assertIndirect(v.data[0] == 26);
-         if (v.numElements > 1)
-            assertIndirect(v.data[1] == 49);
-         if (v.numElements > 2)
-            assertIndirect(v.data[2] == 67);
-         if (v.numElements > 3)
-            assertIndirect(v.data[3] == 89);
+         assertIndirect(v.data[0] == Spy(26));
+         assertIndirect(v.data[1] == Spy(49));
+         assertIndirect(v.data[2] == Spy(67));
+         assertIndirect(v.data[3] == Spy(89));
       }
    }
    
    /*************************************************************
     * VERIFY EMPTY FIXTURE PARAMETERS
     *************************************************************/
-   void assertEmptyFixtureParameters(const custom::vector<int>& v, int line, const char* function)
+   void assertEmptyFixtureParameters(const custom::vector<Spy>& v, int line, const char* function)
    {
       assertIndirect(v.data == nullptr);
       assertIndirect(v.numCapacity == 0);
@@ -2076,21 +2630,21 @@ public:
    /*************************************************************
     * TEARDOWN STANDARD FIXTURE
     *************************************************************/
-   void teardownStandardFixture(custom::vector<int>&v)
+   void teardownStandardFixture(custom::vector<Spy>&v)
    {
       if (v.data != nullptr && false)
       {
          for (size_t i = 0; i < v.numElements; i++)
-         delete (&v.data[i]);
-         //v.alloc.deallocate(v.data, v.numCapacity);
-         
+            v.alloc.destroy(&v.data[i]);
+         v.alloc.deallocate(v.data, v.numCapacity);
+
       }
-      v.data = nullptr;
-      v.numElements = v.numCapacity = 0;
+         v.data = nullptr;
+         v.numElements = v.numCapacity = 0;
    }
-   
-   
-   
+
+
+
 };
 
 #endif // DEBUG

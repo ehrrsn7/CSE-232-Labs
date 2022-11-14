@@ -13,7 +13,9 @@
  *    This will contain the class definition of:
  *        priority_queue          : A class that represents a Priority Queue
  * Author
- *    <your names here>
+ *    Carol Mercau
+ *    Elijah Harrison
+ *    Hunter Powell
  ************************************************************************/
 
 #pragma once
@@ -41,15 +43,9 @@ public:
    //
    // construct
    //
-   priority_queue() 
-   {
-   }
-   priority_queue(const priority_queue &  rhs)  
-   { 
-   }
-   priority_queue(priority_queue && rhs)  
-   { 
-   }
+   priority_queue() {}
+   priority_queue(const priority_queue& rhs) { this = rhs; }
+   priority_queue(priority_queue && rhs)     { }
    template <class Iterator>
    priority_queue(Iterator first, Iterator last) 
    {
