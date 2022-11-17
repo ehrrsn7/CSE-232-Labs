@@ -38,24 +38,34 @@ class priority_queue
    friend class ::TestPQueue; // give the unit test class access to the privates
    template <class TT>
    friend void swap(priority_queue<TT>& lhs, priority_queue<TT>& rhs);
-public:
 
+public:
    //
    // construct
    //
-   priority_queue() {}
-   priority_queue(const priority_queue& rhs) { this = rhs; }
-   priority_queue(priority_queue && rhs)     { }
+   priority_queue()                           { }
+   priority_queue(const priority_queue & rhs) { this = rhs; }
+   priority_queue(     priority_queue && rhs) { this = std::move(rhs); }
+   
    template <class Iterator>
    priority_queue(Iterator first, Iterator last) 
    {
+      // newCapacity = last - first;
+      // reserve(newCapacity);
+      for (auto it = first; it != last; it++)
+         container.push_back(*it);
    }
-   explicit priority_queue (custom::vector<T> && rhs) 
+   
+   explicit priority_queue(custom::vector<T> && rhs) 
    {
+      this->container = rhs.container;
    }
-   explicit priority_queue (custom::vector<T>& rhs)
+   
+   explicit priority_queue(custom::vector<T>& rhs)
    {
+      this->container = std::move(rhs.container);
    }
+  
   ~priority_queue() {}
 
    //
@@ -77,21 +87,15 @@ public:
    //
    // Status
    //
-   size_t size()  const 
-   { 
-      return 99;   
-   }
-   bool empty() const 
-   { 
-      return false;  
-   }
+   size_t size() const { return container.size(); }
+   bool empty() const { return container.empty(); }
    
 private:
 
-   bool percolateDown(size_t indexHeap);      // fix heap from index down. This is a heap index!
+   // fix heap from index down. This is a heap index!
+   bool percolateDown(size_t indexHeap);
 
    custom::vector<T> container; 
-
 };
 
 /************************************************
@@ -101,7 +105,8 @@ private:
 template <class T>
 const T & priority_queue <T> :: top() const
 {
-   return *(new T);
+   assert(!empty());
+   return container[0];
 }
 
 /**********************************************
@@ -111,6 +116,10 @@ const T & priority_queue <T> :: top() const
 template <class T>
 void priority_queue <T> :: pop()
 {
+   if (!empty())
+      std::swap(container.front(), container.back());
+   container.pop();
+   percolateDown(1);
 }
 
 /*****************************************
@@ -121,6 +130,7 @@ template <class T>
 void priority_queue <T> :: push(const T & t)
 {
 }
+
 template <class T>
 void priority_queue <T> :: push(T && t)
 {
