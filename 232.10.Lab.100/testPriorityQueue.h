@@ -731,8 +731,7 @@ public:
       //  | 10| 8 | 9 | 4 | 3 | 7 | 5 |   |   |
       //  +---+---+---+---+---+---+---+---+---+
       custom::priority_queue <int> pq;
-      setupStandardFixture(pq);
-      // exercise
+      setupStandardFixture(pq);      // exercise
       pq.pop();
       // verify
       //    0   1   2   3   4   5

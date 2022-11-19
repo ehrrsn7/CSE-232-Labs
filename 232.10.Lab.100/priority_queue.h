@@ -50,8 +50,8 @@ public:
    template <class Iterator>
    priority_queue(Iterator first, Iterator last) 
    {
-      // newCapacity = last - first;
-      // reserve(newCapacity);
+      size_t newCapacity = last - first;
+      container.reserve(newCapacity);
       for (auto it = first; it != last; it++)
          container.push_back(*it);
    }
@@ -168,16 +168,21 @@ bool priority_queue<T>::percolateDown(size_t indexHeap)
 {
    size_t indexLeft = indexHeap * 2;
    size_t indexRight = indexLeft + 1;
-   size_t indexBigger = indexRight <= size() && container[indexLeft] < container[indexRight] ?
-      indexRight : indexLeft;
+   size_t indexBigger;
 
-   // are the new indexes matched to existing leaves?
-   if (indexBigger >= size())
+   if (indexLeft > size())
       return false;
 
-   if (container[indexHeap] < container[indexBigger])
+   if (indexRight <= size())
+      indexBigger = container[indexLeft-1] < container[indexRight-1] ?
+         indexRight : indexLeft;
+   
+   else
+      indexBigger = indexLeft;
+
+   if (container[indexHeap-1] < container[indexBigger-1])
    {
-      std::swap(container[indexHeap], container[indexBigger]);
+      std::swap(container[indexHeap-1], container[indexBigger-1]);
       percolateDown(indexBigger);
       return true;
    }
