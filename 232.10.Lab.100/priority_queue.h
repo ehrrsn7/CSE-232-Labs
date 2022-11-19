@@ -43,9 +43,9 @@ public:
    //
    // construct
    //
-   priority_queue()                           { }
-   priority_queue(const priority_queue & rhs) { this = rhs; }
-   priority_queue(     priority_queue && rhs) { this = std::move(rhs); }
+   priority_queue() { }
+   priority_queue(const priority_queue & rhs) { this->container = rhs.container; }
+   priority_queue(     priority_queue && rhs) { this->container = std::move(rhs.container); }
    
    template <class Iterator>
    priority_queue(Iterator first, Iterator last) 
@@ -56,17 +56,30 @@ public:
          container.push_back(*it);
    }
    
-   explicit priority_queue(custom::vector<T> && rhs) 
+   explicit priority_queue(custom::vector<T> & rhs)
    {
-      this->container = rhs.container;
-   }
-   
-   explicit priority_queue(custom::vector<T>& rhs)
-   {
-      this->container = std::move(rhs.container);
+      this->container = rhs;
    }
   
-  ~priority_queue() {}
+   explicit priority_queue(custom::vector<T> && rhs) 
+   {
+      this->container = std::move(rhs);
+   }
+   
+  ~priority_queue() { }
+
+   //
+   // Assignment
+   //
+   priority_queue & operator = (const priority_queue & rhs)
+   {
+      this->container = rhs->container;
+   }
+
+   priority_queue & operator = (priority_queue && rhs)
+   {
+      this->container = std::move(rhs->container);
+   }
 
    //
    // Access
@@ -76,8 +89,8 @@ public:
    //
    // Insert
    //
-   void  push(const T& t);
-   void  push(T&& t);     
+   void push(const T& t);
+   void push(T&& t);     
 
    //
    // Remove
@@ -103,10 +116,10 @@ private:
  * Get the maximum item from the heap: the top item.
  ***********************************************/
 template <class T>
-const T & priority_queue <T> :: top() const
+const T & priority_queue<T>::top() const
 {
-   assert(!empty());
-   return container[0];
+   if (empty()) throw "std:out_of_range";
+   return container.front();
 }
 
 /**********************************************
@@ -114,11 +127,11 @@ const T & priority_queue <T> :: top() const
  * Delete the top item from the heap.
  **********************************************/
 template <class T>
-void priority_queue <T> :: pop()
+void priority_queue<T>::pop()
 {
    if (!empty())
       std::swap(container.front(), container.back());
-   container.pop();
+   container.pop_back();
    percolateDown(1);
 }
 
@@ -127,13 +140,21 @@ void priority_queue <T> :: pop()
  * Add a new element to the heap, reallocating as necessary
  ****************************************/
 template <class T>
-void priority_queue <T> :: push(const T & t)
+void priority_queue<T>::push(const T & t)
 {
+   container.push_back(t);
+   size_t index = container.size() / 2;
+   while (index && percolateDown(index))
+      index /= 2;
 }
 
 template <class T>
-void priority_queue <T> :: push(T && t)
+void priority_queue<T>::push(T && t)
 {
+   container.push_back(std::move(t));
+   size_t index = container.size() / 2;
+   while (index && percolateDown(index))
+      index /= 2;
 }
 
 /************************************************
@@ -143,11 +164,26 @@ void priority_queue <T> :: push(T && t)
  * Return TRUE if anything changed.
  ************************************************/
 template <class T>
-bool priority_queue <T> :: percolateDown(size_t indexHeap)
+bool priority_queue<T>::percolateDown(size_t indexHeap)
 {
+   size_t indexLeft = indexHeap * 2;
+   size_t indexRight = indexLeft + 1;
+   size_t indexBigger = indexRight <= size() && container[indexLeft] < container[indexRight] ?
+      indexRight : indexLeft;
+
+   // are the new indexes matched to existing leaves?
+   if (indexBigger >= size())
+      return false;
+
+   if (container[indexHeap] < container[indexBigger])
+   {
+      std::swap(container[indexHeap], container[indexBigger]);
+      percolateDown(indexBigger);
+      return true;
+   }
+   
    return false;
 }
-
 
 /************************************************
  * SWAP
@@ -157,7 +193,7 @@ template <class T>
 inline void swap(custom::priority_queue <T>& lhs,
                  custom::priority_queue <T>& rhs)
 {
+   std::swap(lhs.container, rhs.container);
 }
 
 };
-
