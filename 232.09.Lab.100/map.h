@@ -13,7 +13,7 @@
  *    This will contain the class definition of:
  *        map                 : A class that represents a map
  *        map::iterator       : An iterator through a map
- * Author
+ * Authors
  *    Hunter Powell
  *    Elijah Harrison
  *    Carol Mercau
@@ -55,7 +55,7 @@ public:
    //
    map()                                           { }
    map(const map &  rhs) : bst(rhs.bst)            { }
-   map(map && rhs)       : bst(std::move(rhs.bst)) { }
+   map(      map && rhs) : bst(std::move(rhs.bst)) { }
    map(const std::initializer_list<Pairs> & il)    { *this = il; }
   ~map()                                           { }
 
