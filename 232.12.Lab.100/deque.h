@@ -338,8 +338,8 @@ void deque<T>::reallocate(int newCapacity)
    auto tmp = new T[newCapacity];
    for (int id = 0; id < numElements; id++)
       tmp[id] = data[iaFromID(id)];
-   for (int id = numElements; id < newCapacity; id++)
-      tmp[id] = T();
+//   for (int id = numElements; id < newCapacity; id++)
+//      tmp[id] = T();
    numCapacity = newCapacity;
    iaFront = 0;
    delete data;
