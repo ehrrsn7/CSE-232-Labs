@@ -21,10 +21,9 @@
 
 #pragma once
 
-// Debug stuff
-#include <cassert>
+#include <cassert> // Debug stuff
 
-class TestDeque;    // forward declaration for TestDeque unit test class
+class TestDeque; // forward declaration for TestDeque unit test class
 
 namespace custom
 {
@@ -51,11 +50,7 @@ public:
    deque() : data(nullptr), numCapacity(0), numElements(0), iaFront(0) { }
    deque(const deque<T> & rhs) { *this = rhs; }
    deque(size_t); // fill constructor
-  ~deque() 
-   {
-      // delete data;
-      data = nullptr;
-   }
+  ~deque() { }
 
    //
    // Assign
@@ -67,15 +62,15 @@ public:
    //
    class iterator;
    iterator begin() { return iterator(this, iaFront); }
-   iterator end()   { return iterator(this, iaFront + numElements); }
+   iterator end()   { return iterator(this, iaFront + (int)numElements); }
 
    //
    // Access
    //
    const T & operator[] (int id) const { return data[iaFromID(id)]; }
          T & operator[] (int id)       { return data[iaFromID(id)]; }
-   const T & front() const             { return data[wrap_ia(iaFront)]; }
-         T & front()                   { return data[wrap_ia(iaFront)]; }
+   const T & front() const             { return data[iaWrap(iaFront)]; }
+         T & front()                   { return data[iaWrap(iaFront)]; }
    const T & back() const;
          T & back();
 
@@ -101,7 +96,7 @@ public:
    // 
    // Status
    //
-   int size() const { return numElements; }
+   size_t size() const { return numElements; }
    bool empty() const { return !numElements; }
    void reallocate(int newCapacity);
    
@@ -110,11 +105,15 @@ private:
    // fetch array index from the deque index
    int iaFromID(int id) const
    {
+      // assert
       assert (0 <= id && id < numElements);
-      return wrap_ia(id + iaFront); // ia
+
+      // add id to iaFront, then wrap and return
+      return iaWrap(id + iaFront); // ia
    }
 
-   size_t wrap_ia(int ia) const
+   // return value which is within 0 <= ia < numCapacity
+   int iaWrap(int ia) const
    {
       // ia could be negative, and the % operator doesn't handle making it positive
       while (ia < 0)
@@ -123,10 +122,10 @@ private:
       // ia could be greater than numCapacity
       ia %= numCapacity;
       
-      return size_t(ia);
+      // assert and return :)
+      assert (0 <= ia && ia < numCapacity);
+      return ia;
    }
-
-   void resize(size_t newCapacity = 0);
 
    // member variables
    T * data;           // dynamically allocated data for the deque
@@ -225,7 +224,10 @@ template <class T>
 deque<T>::deque(size_t newCapacity) 
    : data(nullptr), numCapacity(newCapacity), numElements(newCapacity), iaFront(0)
 {
+   // allocate
    data = new T[newCapacity];
+
+   // fill
    for (size_t i = 0; i < newCapacity; i++)
       data[i] = T();
 }
@@ -236,6 +238,10 @@ deque<T>::deque(size_t newCapacity)
 template <class T>
 deque<T> & deque<T>::operator = (const deque<T> & rhs)
 {
+   // TODO: I think this is the only thing left to fix.
+   // Fails test:
+   // test_constructCopy_standard()
+	// 	line:293 condition:d.numCapacity == 3
    numElements = rhs.numElements;
    iaFront = rhs.iaFront;
    if (numCapacity < rhs.numCapacity)
@@ -258,14 +264,14 @@ template <class T>
 const T & deque<T>::back() const 
 {
    assert (numElements && numCapacity);
-   return data[wrap_ia(iaFront + numElements - 1)];
+   return data[iaFromID(numElements - 1)];
 }
 
 template <class T>
 T & deque<T>::back()
 {
    assert (numElements && numCapacity);
-   return data[wrap_ia(iaFront + numElements - 1)];
+   return data[iaFromID((int)numElements - 1)];
 }
 
 /*****************************************************
@@ -274,10 +280,13 @@ T & deque<T>::back()
 template <class T>
 void deque<T>::pop_front()
 {
-   numElements--;
+   // shift iaFront/id
    iaFront++;
    if (iaFront == numCapacity)
-      iaFront = 0;
+      iaFront = iaWrap(iaFront);
+   
+   // pop front
+   numElements--;
 }
 
 /******************************************************
@@ -288,15 +297,10 @@ void deque<T>::push_back(const T & t)
 {
    // reallocate
    if (numElements == numCapacity)
-   {
-      if (!numCapacity)
-         reallocate(1);
-      else
-         reallocate(numCapacity * 2);
-   }
+      (numCapacity) ? reallocate((int)numCapacity * 2) : reallocate(1);
    
    // push back
-   data[iaFromID(numElements++)] = t;
+   data[iaFromID((int)numElements++)] = t;
 }
 
 /******************************************************
@@ -305,45 +309,36 @@ void deque<T>::push_back(const T & t)
 template <class T>
 void deque<T>::push_front(const T & t) 
 {
-   if (!numElements)
-      reallocate(1);
-   else if (numElements == numCapacity)
-      reallocate(numCapacity * 2);
+   // reallocate
+   if (numElements == numCapacity)
+      (numCapacity) ? reallocate((int)numCapacity * 2) : reallocate(1);
+   
+   // shift iaFront/id
    iaFront--;
-   data[wrap_ia(iaFront)] = t;
+
+   // push_front
+   data[iaWrap(iaFront)] = t;
    numElements++;
 }
 
 /****************************************************
  * DEQUE :: GROW
- * If the deque is currently empty, allocate to size 2.
- * Otherwise, double the size
  ***************************************************/
-template <class T>
-void deque<T>::resize(size_t newCapacity)
-{
-   if (newCapacity > size())
-      while (newCapacity > size())
-         push_back(T());
-         
-   else if (newCapacity < size())
-      while (newCapacity < size())
-         pop_back();
-}
-
 template <class T>
 void deque<T>::reallocate(int newCapacity)
 {
    assert (newCapacity > 0 && newCapacity > numElements);
+
+   // use buffer to reallocate
    auto tmp = new T[newCapacity];
    for (int id = 0; id < numElements; id++)
       tmp[id] = data[iaFromID(id)];
-//   for (int id = numElements; id < newCapacity; id++)
-//      tmp[id] = T();
-   numCapacity = newCapacity;
-   iaFront = 0;
    delete data;
    data = tmp;
+
+   // set attributes
+   numCapacity = newCapacity;
+   iaFront = 0;
 }
 
 } // namespace custom
