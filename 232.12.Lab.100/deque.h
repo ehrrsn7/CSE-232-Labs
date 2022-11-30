@@ -112,10 +112,10 @@ private:
    {
       int numCell = numCapacity;
       int numBlock = 1;
-      assert (0 <= id < numElements);
-      assert (0 <= iaFront < numCell);
+      assert (0 <= id && id < numElements);
+      assert (0 <= iaFront && iaFront < numCell);
       int ia = (id + iaFront) % numCell;
-      assert (0 <= ia < numCell * numBlock);
+      assert (0 <= ia && ia < (numCell * numBlock));
       return ia;
    }
 
@@ -322,7 +322,7 @@ void deque<T>::resize(size_t newCapacity)
 template <class T>
 void deque<T>::reallocate(size_t newCapacity)
 {
-   assert (newCapacity >= 0 && newCapacity > numElements);
+   assert (newCapacity > 0 && newCapacity > numElements);
    auto tmp = new T[newCapacity];
    for (size_t id = 0; id < numElements; id++)
       tmp[id] = data[iaFromID(id)];

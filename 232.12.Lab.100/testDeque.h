@@ -51,7 +51,7 @@ public:
       test_end_standard();
       test_iterator_increment_standardMiddle();
       test_iterator_dereferenceRead_standard();
-      test_iterator_dereferenceRead_wrap();
+      test_iterator_dereferenceRead_wrap(); // Assert firing here
       test_iterator_dereferenceRead_wrapNegative();
       test_iterator_dereferenceWrite_standard();
       test_iterator_difference_standard();
