@@ -113,7 +113,7 @@ private:
       int numCell = numCapacity;
       int numBlock = 1;
       assert (0 <= id && id < numElements);
-      assert (0 <= iaFront && iaFront < numCell);
+      // assert (0 <= iaFront && iaFront < numCell); // this assert is invalid because the array wraps!
       int ia = (id + iaFront) % numCell;
       assert (0 <= ia && ia < (numCell * numBlock));
       return ia;
@@ -291,9 +291,9 @@ void deque<T>::push_back(const T & t)
 template <class T>
 void deque<T>::push_front(const T & t) 
 {
-//   if (!numElements)
-//      reallocate(1);
-   if (numElements == numCapacity)
+   if (!numElements)
+      reallocate(1);
+   else if (numElements == numCapacity)
       reallocate(numCapacity * 2);
    iaFront--;
    if (iaFront < 0)
