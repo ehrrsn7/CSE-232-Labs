@@ -72,10 +72,10 @@ public:
    //
    // Access
    //
-   const T & operator[] (int id) const { return data[iaFromID(id) % numCapacity]; }
-         T & operator[] (int id)       { return data[iaFromID(id) % numCapacity]; }
-   const T & front() const                { return data[iaFront % numCapacity]; }
-         T & front()                      { return data[iaFront % numCapacity]; }
+   const T & operator[] (int id) const { return data[iaFromID(id)]; }
+         T & operator[] (int id)       { return data[iaFromID(id)]; }
+   const T & front() const                { return data[wrap_ia(iaFront)]; }
+         T & front()                      { return data[wrap_ia(iaFront)]; }
    const T & back() const;
          T & back();
 
@@ -110,13 +110,18 @@ private:
    // fetch array index from the deque index
    int iaFromID(int id) const
    {
-      int numCell = numCapacity;
-      int numBlock = 1;
       assert (0 <= id && id < numElements);
-      // assert (0 <= iaFront && iaFront < numCell); // this assert is invalid because the array wraps!
-      int ia = (id + iaFront) % numCell;
-      assert (ia < (numCell * numBlock));
-      return ia;
+      return wrap_ia(id + iaFront); // ia
+   }
+
+   size_t wrap_ia(int ia) const
+   {
+      // ia could be greater than numCapacity
+      ia %= numCapacity;
+      // ia could be negative, and the % operator doesn't handle making it positive
+      while (ia < 0)
+         ia += numCapacity;
+      return size_t(ia);
    }
 
    void resize(size_t newCapacity = 0);
@@ -251,14 +256,14 @@ template <class T>
 const T & deque<T>::back() const 
 {
    assert (numElements && numCapacity);
-   return data[iaFromID(numElements - 1) % numCapacity];
+   return data[iaFromID(numElements - 1)];
 }
 
 template <class T>
 T & deque<T>::back()
 {
    assert (numElements && numCapacity);
-   return data[iaFromID(numElements - 1) % numCapacity];
+   return data[iaFromID(numElements - 1)];
 }
 
 /*****************************************************
@@ -303,10 +308,7 @@ void deque<T>::push_front(const T & t)
    else if (numElements == numCapacity)
       reallocate(numCapacity * 2);
    iaFront--;
-   int newIndex = iaFront % (int)numCapacity;
-   while (newIndex < 0)
-      newIndex += numCapacity;
-   data[newIndex] = t;
+   data[wrap_ia(iaFront)] = t;
    numElements++;
 }
 
