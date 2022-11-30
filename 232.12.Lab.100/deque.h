@@ -13,8 +13,10 @@
  *    This will contain the class definition of:
  *        deque                 : A class that represents a binary search tree
  *        deque::iterator       : An iterator through BST
- * Author
- *    <your names here>
+ * Authors
+ *    Hunter Powell
+ *    Carol Mercau
+ *    Elijah Harrison
  ************************************************************************/
 
 #pragma once
@@ -48,10 +50,10 @@ public:
    //
    deque() : data(nullptr), numCapacity(0), numElements(0), iaFront(0) { }
    deque(const deque<T> & rhs) { *this = rhs; }
-   deque(int newCapacity);
+   deque(size_t); // fill constructor
   ~deque() 
    {
-      delete data;
+      // delete data;
       data = nullptr;
    }
 
@@ -70,12 +72,12 @@ public:
    //
    // Access
    //
-   T & front();
-   T & back();
-   const T & front() const;
-   const T & back()  const;
-   const T & operator[] (size_t index) const;
-         T & operator[] (size_t index);
+   const T & operator[] (size_t id) const { return data[iaFromID(id)]; }
+         T & operator[] (size_t id)       { return data[iaFromID(id)]; }
+   const T & front() const                { return data[iaFront]; }
+         T & front()                      { return data[iaFront]; }
+   const T & back() const;
+         T & back();
 
    // 
    // Insert
@@ -87,7 +89,7 @@ public:
    // Remove
    //
    void pop_front();
-   void pop_back();
+   void pop_back() { numElements--; }
 
    void clear()
    {
@@ -101,33 +103,30 @@ public:
    //
    size_t size() const { return numElements; }
    bool empty() const { return !numElements; }
-   void reallocate(int newCapacity);
+   void reallocate(size_t newCapacity);
    
 private:
    
    // fetch array index from the deque index
-   int iaFromID(int id) const
+   size_t iaFromID(size_t id) const
    {
       int numCell = numCapacity;
       int numBlock = 1;
       assert (0 <= id < numElements);
-      assert (0 <= iaFront < numCell);
       assert (0 <= iaFront < numCell);
       int ia = (id + iaFront) % numCell;
       assert (0 <= ia < numCell * numBlock);
       return ia;
    }
 
-   void resize(int newCapacity = 0);
+   void resize(size_t newCapacity = 0);
 
    // member variables
    T * data;           // dynamically allocated data for the deque
    size_t numCapacity; // the size of the data array
    size_t numElements; // number of elements in the deque
-   int iaFront;        // the index of the first item in the array
+   size_t iaFront;        // the index of the first item in the array
 };
-
-
 
 /**********************************************************
  * DEQUE ITERATOR
@@ -142,7 +141,7 @@ public:
    // Construct
    //
    iterator() : pDeque(nullptr), id(0) { }
-   iterator(custom::deque<T> * pDeque, int id) : pDeque(pDeque), id(id) { }
+   iterator(custom::deque<T> * pDeque, size_t id) : pDeque(pDeque), id(id) { }
    iterator(const iterator & rhs) { *this = rhs; }
 
    //
@@ -164,31 +163,15 @@ public:
    // 
    // Access
    //
-   const T & operator * () const
-   {
-      // return pDeque[id]; 
-      return *(new T);
-   }
-
-   T & operator * ()
-   { 
-      // return pDeque[id]; 
-      return *(new T);
-   }
+   const T & operator * () const { return (*pDeque)[id]; }
+         T & operator * ()       { return (*pDeque)[id]; }
 
    // 
    // Arithmetic
    //
-   int operator - (iterator rhs) const
-   {
-      // size_t x = 0;
-      // for (auto it = *this; it != rhs; it++)
-      //    x++;
-      // return x;
-      return 99;
-   }
+   size_t operator - (iterator rhs) const { return id - rhs.id; }
 
-   iterator & operator += (int offset)
+   iterator & operator += (size_t offset)
    {
       id += offset;
       return *this;
@@ -223,7 +206,7 @@ public:
 private:
 
    // Member variables
-   int id;             // deque index
+   size_t id; // deque index
    deque<T> * pDeque;
 };
 
@@ -232,7 +215,7 @@ private:
  * DEQUE : CONSTRUCTOR - fill
  ***************************************************/
 template <class T>
-deque<T>::deque(int newCapacity) 
+deque<T>::deque(size_t newCapacity) 
    : data(nullptr), numCapacity(newCapacity), numElements(newCapacity), iaFront(0)
 {
    data = new T[newCapacity];
@@ -253,23 +236,6 @@ deque<T> & deque<T>::operator = (const deque<T> & rhs)
    return *this;
 }
 
-
-/**************************************************
- * DEQUE :: FRONT
- * Fetch the item that is at the beginning of the deque
- *************************************************/
-template <class T>
-const T & deque<T>::front() const 
-{
-   return data[iaFront];
-}
-
-template <class T>
-T & deque<T> ::front()
-{
-   return data[iaFront];
-}
-
 /**************************************************
  * DEQUE :: BACK
  * Fetch the item that is at the end of the deque
@@ -286,31 +252,6 @@ T & deque<T> ::back()
 {
    assert (numElements);
    return data[iaFromID(numElements - 1)];
-}
-
-/**************************************************
- * DEQUE :: SUBSCRIPT
- * Fetch the item in the deque
- *************************************************/
-template <class T>
-const T & deque<T> ::operator[] (size_t id) const
-{
-   return data[iaFromID(id)];
-}
-
-template <class T>
-T & deque<T> ::operator[] (size_t id)
-{
-   return data[iaFromID(id)];
-}
-
-/*****************************************************
- * DEQUE : POP_BACK
- *****************************************************/
-template <class T>
-void deque<T>::pop_back()
-{
-   numElements--;
 }
 
 /*****************************************************
@@ -331,9 +272,17 @@ void deque<T>::pop_front()
 template <class T>
 void deque<T>::push_back(const T & t) 
 {
+   // reallocate
    if (numElements == numCapacity)
-      reallocate(numCapacity * 2);
-   data[iaFromID(numElements++)];
+   {
+      if (!numCapacity)
+         reallocate(1);
+      else
+         reallocate(numCapacity * 2);
+   }
+   
+   // push back
+   data[iaFromID(numElements++)] = t;
 }
 
 /******************************************************
@@ -342,6 +291,8 @@ void deque<T>::push_back(const T & t)
 template <class T>
 void deque<T>::push_front(const T & t) 
 {
+//   if (!numElements)
+//      reallocate(1);
    if (numElements == numCapacity)
       reallocate(numCapacity * 2);
    iaFront--;
@@ -357,10 +308,10 @@ void deque<T>::push_front(const T & t)
  * Otherwise, double the size
  ***************************************************/
 template <class T>
-void deque<T>::resize(int newCapacity)
+void deque<T>::resize(size_t newCapacity)
 {
    if (newCapacity > size())
-      while(newCapacity > size())
+      while (newCapacity > size())
          push_back(T());
          
    else if (newCapacity < size())
@@ -369,9 +320,9 @@ void deque<T>::resize(int newCapacity)
 }
 
 template <class T>
-void deque<T>::reallocate(int newCapacity)
+void deque<T>::reallocate(size_t newCapacity)
 {
-   assert (newCapacity > 0 && newCapacity > numElements);
+   assert (newCapacity >= 0 && newCapacity > numElements);
    auto tmp = new T[newCapacity];
    for (size_t id = 0; id < numElements; id++)
       tmp[id] = data[iaFromID(id)];

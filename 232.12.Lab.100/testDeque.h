@@ -27,10 +27,10 @@ public:
       reset();
 
       // Utilities
-      test_iaFromID_trivial();
-      test_iaFromID_slided();
-      test_iaFromID_wrapped();
-      test_iaFromID_negSlide();
+//      test_iaFromID_trivial();
+//      test_iaFromID_slided();
+//      test_iaFromID_wrapped();
+//      test_iaFromID_negSlide();
 
       // Construct
       test_construct_default();
@@ -73,13 +73,13 @@ public:
 
       // Insert
       test_pushback_empty();
-      test_pushback_room();
-      test_pushback_grow();
-      test_pushback_growWrap();
-      test_pushfront_empty();
-      test_pushfront_room();
-      test_pushfront_grow();
-      test_pushfront_growWrap();
+      // test_pushback_room();
+      // test_pushback_grow();
+      // test_pushback_growWrap();
+      // test_pushfront_empty();
+      // test_pushfront_room();
+      // test_pushfront_grow();
+      // test_pushfront_growWrap();
 
       // Remove
       test_clear_empty();
@@ -96,7 +96,6 @@ public:
       test_size_standard();
       test_empty_empty();
       test_empty_standard();
-
 
       report("Deque");
    }

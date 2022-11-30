@@ -24,9 +24,9 @@
 
 /* Begin PBXFileReference section */
 		C19ADCD625605FCD003A88FD /* Lab04 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lab04; sourceTree = BUILT_PRODUCTS_DIR; };
-		C19ADCE225606019003A88FD /* testDeque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testDeque.h; sourceTree = SOURCE_ROOT; };
-		C19ADCE325606019003A88FD /* deque.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = deque.h; sourceTree = SOURCE_ROOT; };
-		C19ADCE42560601A003A88FD /* testDeque.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testDeque.cpp; sourceTree = SOURCE_ROOT; };
+		C19ADCE225606019003A88FD /* testDeque.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testDeque.h; sourceTree = SOURCE_ROOT; tabWidth = 3; };
+		C19ADCE325606019003A88FD /* deque.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = deque.h; sourceTree = SOURCE_ROOT; tabWidth = 3; };
+		C19ADCE42560601A003A88FD /* testDeque.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testDeque.cpp; sourceTree = SOURCE_ROOT; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,14 +84,14 @@
 		C19ADCCE25605FCD003A88FD /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					C19ADCD525605FCD003A88FD = {
 						CreatedOnToolsVersion = 12.1;
 					};
 				};
 			};
-			buildConfigurationList = C19ADCD125605FCD003A88FD /* Build configuration list for PBXProject "Lab04" */;
+			buildConfigurationList = C19ADCD125605FCD003A88FD /* Build configuration list for PBXProject "LabDeque" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -155,6 +155,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -214,6 +215,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -237,6 +239,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -246,6 +249,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -253,7 +257,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C19ADCD125605FCD003A88FD /* Build configuration list for PBXProject "Lab04" */ = {
+		C19ADCD125605FCD003A88FD /* Build configuration list for PBXProject "LabDeque" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C19ADCDB25605FCD003A88FD /* Debug */,
