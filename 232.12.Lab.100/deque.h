@@ -74,8 +74,8 @@ public:
    //
    const T & operator[] (int id) const { return data[iaFromID(id)]; }
          T & operator[] (int id)       { return data[iaFromID(id)]; }
-   const T & front() const                { return data[wrap_ia(iaFront)]; }
-         T & front()                      { return data[wrap_ia(iaFront)]; }
+   const T & front() const             { return data[wrap_ia(iaFront)]; }
+         T & front()                   { return data[wrap_ia(iaFront)]; }
    const T & back() const;
          T & back();
 
@@ -116,11 +116,13 @@ private:
 
    size_t wrap_ia(int ia) const
    {
-      // ia could be greater than numCapacity
-      ia %= numCapacity;
       // ia could be negative, and the % operator doesn't handle making it positive
       while (ia < 0)
          ia += numCapacity;
+      
+      // ia could be greater than numCapacity
+      ia %= numCapacity;
+      
       return size_t(ia);
    }
 
@@ -256,14 +258,14 @@ template <class T>
 const T & deque<T>::back() const 
 {
    assert (numElements && numCapacity);
-   return data[iaFromID(numElements - 1)];
+   return data[wrap_ia(iaFront + numElements - 1)];
 }
 
 template <class T>
 T & deque<T>::back()
 {
    assert (numElements && numCapacity);
-   return data[iaFromID(numElements - 1)];
+   return data[wrap_ia(iaFront + numElements - 1)];
 }
 
 /*****************************************************
