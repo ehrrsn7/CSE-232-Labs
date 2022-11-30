@@ -67,15 +67,15 @@ public:
    //
    class iterator;
    iterator begin() { return iterator(this, iaFront); }
-   iterator end() { return iterator(); }
+   iterator end()   { return iterator(this, iaFront + numElements); }
 
    //
    // Access
    //
-   const T & operator[] (size_t id) const { return data[iaFromID(id)]; }
-         T & operator[] (size_t id)       { return data[iaFromID(id)]; }
-   const T & front() const                { return data[iaFront]; }
-         T & front()                      { return data[iaFront]; }
+   const T & operator[] (int id) const { return data[iaFromID(id) % numCapacity]; }
+         T & operator[] (int id)       { return data[iaFromID(id) % numCapacity]; }
+   const T & front() const                { return data[iaFront % numCapacity]; }
+         T & front()                      { return data[iaFront % numCapacity]; }
    const T & back() const;
          T & back();
 
@@ -101,21 +101,21 @@ public:
    // 
    // Status
    //
-   size_t size() const { return numElements; }
+   int size() const { return numElements; }
    bool empty() const { return !numElements; }
-   void reallocate(size_t newCapacity);
+   void reallocate(int newCapacity);
    
 private:
    
    // fetch array index from the deque index
-   size_t iaFromID(size_t id) const
+   int iaFromID(int id) const
    {
       int numCell = numCapacity;
       int numBlock = 1;
       assert (0 <= id && id < numElements);
       // assert (0 <= iaFront && iaFront < numCell); // this assert is invalid because the array wraps!
       int ia = (id + iaFront) % numCell;
-      assert (0 <= ia && ia < (numCell * numBlock));
+      assert (ia < (numCell * numBlock));
       return ia;
    }
 
@@ -125,7 +125,7 @@ private:
    T * data;           // dynamically allocated data for the deque
    size_t numCapacity; // the size of the data array
    size_t numElements; // number of elements in the deque
-   size_t iaFront;        // the index of the first item in the array
+   int iaFront;        // the index of the first item in the array
 };
 
 /**********************************************************
@@ -133,7 +133,7 @@ private:
  * Forward and reverse iterator through a deque, just call
  *********************************************************/
 template <typename T>
-class deque<T> ::iterator
+class deque<T>::iterator
 {
    friend class ::TestDeque; // give unit tests access to the privates
 public:
@@ -141,7 +141,7 @@ public:
    // Construct
    //
    iterator() : pDeque(nullptr), id(0) { }
-   iterator(custom::deque<T> * pDeque, size_t id) : pDeque(pDeque), id(id) { }
+   iterator(custom::deque<T> * pDeque, int id) : pDeque(pDeque), id(id) { }
    iterator(const iterator & rhs) { *this = rhs; }
 
    //
@@ -169,9 +169,9 @@ public:
    // 
    // Arithmetic
    //
-   size_t operator - (iterator rhs) const { return id - rhs.id; }
+   int operator - (iterator rhs) const { return id - rhs.id; }
 
-   iterator & operator += (size_t offset)
+   iterator & operator += (int offset)
    {
       id += offset;
       return *this;
@@ -206,7 +206,7 @@ public:
 private:
 
    // Member variables
-   size_t id; // deque index
+   int id; // deque index
    deque<T> * pDeque;
 };
 
@@ -229,10 +229,17 @@ deque<T>::deque(size_t newCapacity)
 template <class T>
 deque<T> & deque<T>::operator = (const deque<T> & rhs)
 {
-   data = rhs.data;
-   numCapacity = rhs.numCapacity;
    numElements = rhs.numElements;
    iaFront = rhs.iaFront;
+   if (numCapacity < rhs.numCapacity)
+   {
+      numCapacity = rhs.numCapacity;
+      data = new T[numCapacity];
+      for (size_t i = 0; i < rhs.numCapacity; i++)
+         data[i] = rhs.data[i];
+   }
+   else
+      data = rhs.data;
    return *this;
 }
 
@@ -243,15 +250,15 @@ deque<T> & deque<T>::operator = (const deque<T> & rhs)
 template <class T>
 const T & deque<T>::back() const 
 {
-   assert (numElements);
-   return data[iaFromID(numElements - 1)];
+   assert (numElements && numCapacity);
+   return data[iaFromID(numElements - 1) % numCapacity];
 }
 
 template <class T>
-T & deque<T> ::back()
+T & deque<T>::back()
 {
-   assert (numElements);
-   return data[iaFromID(numElements - 1)];
+   assert (numElements && numCapacity);
+   return data[iaFromID(numElements - 1) % numCapacity];
 }
 
 /*****************************************************
@@ -296,9 +303,10 @@ void deque<T>::push_front(const T & t)
    else if (numElements == numCapacity)
       reallocate(numCapacity * 2);
    iaFront--;
-   if (iaFront < 0)
-      iaFront = numCapacity - 1;
-   data[iaFront] = t;
+   int newIndex = iaFront % (int)numCapacity;
+   while (newIndex < 0)
+      newIndex += numCapacity;
+   data[newIndex] = t;
    numElements++;
 }
 
@@ -320,12 +328,14 @@ void deque<T>::resize(size_t newCapacity)
 }
 
 template <class T>
-void deque<T>::reallocate(size_t newCapacity)
+void deque<T>::reallocate(int newCapacity)
 {
    assert (newCapacity > 0 && newCapacity > numElements);
    auto tmp = new T[newCapacity];
-   for (size_t id = 0; id < numElements; id++)
+   for (int id = 0; id < numElements; id++)
       tmp[id] = data[iaFromID(id)];
+   for (int id = numElements; id < newCapacity; id++)
+      tmp[id] = T();
    numCapacity = newCapacity;
    iaFront = 0;
    delete data;

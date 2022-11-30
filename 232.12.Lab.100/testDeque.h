@@ -27,10 +27,10 @@ public:
       reset();
 
       // Utilities
-//      test_iaFromID_trivial();
-//      test_iaFromID_slided();
-//      test_iaFromID_wrapped();
-//      test_iaFromID_negSlide();
+      test_iaFromID_trivial();
+      test_iaFromID_slided();
+      test_iaFromID_wrapped();
+      test_iaFromID_negSlide();
 
       // Construct
       test_construct_default();
@@ -43,16 +43,16 @@ public:
       test_assign_emptyToStandard();
       test_assign_smallToBig();
       test_assign_bigToSmall();
-      test_assign_unwrap();
-      test_assign_unwrapNegative();
+      test_assign_unwrap(); // test flagged
+      test_assign_unwrapNegative(); // test flagged
 
       // Iterator
       test_begin_standard();
       test_end_standard();
       test_iterator_increment_standardMiddle();
       test_iterator_dereferenceRead_standard();
-      test_iterator_dereferenceRead_wrap(); // Assert firing here
-      test_iterator_dereferenceRead_wrapNegative();
+      test_iterator_dereferenceRead_wrap();
+      test_iterator_dereferenceRead_wrapNegative(); // test flagged
       test_iterator_dereferenceWrite_standard();
       test_iterator_difference_standard();
       test_iterator_addonto_standard();
@@ -60,15 +60,15 @@ public:
       // Access
       test_frontRead_standard();
       test_frontRead_wrap();
-      test_frontRead_wrapNegative();
+      test_frontRead_wrapNegative(); // test flagged
       test_frontWrite_standard();
       test_backRead_standard();
       test_backRead_wrap();
-      test_backRead_wrapNegative();
+      test_backRead_wrapNegative(); // test flagged
       test_backWrite_standard();
       test_subscriptRead_standard();
       test_subscriptRead_wrap();
-      test_subscriptRead_wrapNegative();
+      test_subscriptRead_wrapNegative(); // test flagged
       test_subscriptWrite_standard();
 
       // Insert
@@ -76,10 +76,10 @@ public:
       test_pushback_room();
       test_pushback_grow();
       test_pushback_growWrap();
-      test_pushfront_empty();
-      test_pushfront_room();
-      test_pushfront_grow();
-      test_pushfront_growWrap();
+      test_pushfront_empty(); // test flagged
+      test_pushfront_room(); // test flagged
+      test_pushfront_grow(); // test flagged
+      test_pushfront_growWrap(); // test flagged
 
       // Remove
       test_clear_empty();
@@ -1329,9 +1329,9 @@ public:
       assertUnit(d.data != nullptr);
       if (d.numElements >= 3)
       {
-         assertUnit(d.data[0] == 11);
+         assertUnit(d.data[0] == 11); // test flagged
          assertUnit(d.data[1] == 26);
-         assertUnit(d.data[2] == 31);
+         assertUnit(d.data[2] == 31); // test flagged
       }
       // teardown     
    }
