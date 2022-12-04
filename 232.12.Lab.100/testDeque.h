@@ -43,8 +43,8 @@ public:
       test_assign_emptyToStandard();
       test_assign_smallToBig();
       test_assign_bigToSmall();
-      // test_assign_unwrap(); // test flagged // The test output is wrong, ask bro. helfrich about it
-      // test_assign_unwrapNegative(); // test flagged // The test output is wrong, ask bro. helfrich about it
+      test_assign_unwrap(); 
+      test_assign_unwrapNegative();
 
       // Iterator
       test_begin_standard();
