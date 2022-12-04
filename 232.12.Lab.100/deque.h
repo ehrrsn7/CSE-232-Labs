@@ -238,18 +238,21 @@ deque<T>::deque(size_t newCapacity)
 template <class T>
 deque<T> & deque<T>::operator = (const deque<T> & rhs)
 {
-   // TODO: I think this is the only thing left to fix.
-   // Fails test:
-   // test_constructCopy_standard()
-	// 	line:293 condition:d.numCapacity == 3
    numElements = rhs.numElements;
-   iaFront = rhs.iaFront;
+   iaFront = 0;
+   int rhsI = rhs.iaFront;
    if (numCapacity < rhs.numCapacity)
    {
       numCapacity = rhs.numCapacity;
       data = new T[numCapacity];
       for (size_t i = 0; i < rhs.numCapacity; i++)
-         data[i] = rhs.data[i];
+      {
+         if (rhsI >= numCapacity)
+            rhsI = 0;
+         data[i] = rhs.data[rhsI];
+         rhsI++;
+      }
+
    }
    else
       data = rhs.data;
