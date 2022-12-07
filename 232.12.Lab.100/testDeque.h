@@ -35,7 +35,7 @@ public:
       // Construct
       test_construct_default();
       test_constructCopy_empty();
-      test_constructCopy_standard(); // test flagged
+      test_constructCopy_standard();
 
       // Assign
       test_assign_emptyToEmpty();
@@ -44,7 +44,7 @@ public:
       test_assign_smallToBig();
       test_assign_bigToSmall();
       test_assign_unwrap(); 
-      test_assign_unwrapNegative();
+      test_assign_unwrapNegative(); // test flagged
 
       // Iterator
       test_begin_standard();
@@ -488,13 +488,17 @@ public:
       // id =  1   2    0    1    2
       assertUnit(dSrc.numCapacity == 3);
       assertUnit(dSrc.iaFront == 2);
+      assert(dSrc.iaFront == 2);
       assertUnit(dSrc.numElements == 3);
       assertUnit(dSrc.data != nullptr);
       if (dSrc.data != nullptr && dSrc.numCapacity == 3)
       {
          assertUnit(dSrc.data[0] = 26);
+         assert (dSrc.data[0] == 26);
          assertUnit(dSrc.data[1] = 31);
+         assert(dSrc.data[1] = 31);
          assertUnit(dSrc.data[2] = 11);
+         assert(dSrc.data[2] = 11);
       }
       //   iaFront
       // ia = 0    1    2 
@@ -528,7 +532,7 @@ public:
       dDes = dSrc;
       // verify
       //    iaFront
-      // ia = -4   -3   -2   -1   0    1    2    
+      // ia = -4   -3   -2   -1   0    1    2
       //     +   +    +    +    +----+----+----+ 
       //      11   26   31   11 | 26 | 31 | 11 |
       //     +   +    +    +    +----+----+----+
@@ -536,12 +540,16 @@ public:
       assertUnit(dSrc.numCapacity == 3);
       assertUnit(dSrc.numElements == 3);
       assertUnit(dSrc.iaFront == -4);
+      assert(dSrc.iaFront == -4);
       assertUnit(dSrc.data != nullptr);
       if (dSrc.data != nullptr && dSrc.numCapacity == 3)
       {
-         assertUnit(dSrc.data[0] = 26);
-         assertUnit(dSrc.data[1] = 31);
-         assertUnit(dSrc.data[2] = 11);
+         assertUnit(dSrc[0] = 26);
+         assert(dSrc[0] = 26);
+         assertUnit(dSrc[1] = 31);
+         assert(dSrc[1] = 31);
+         assertUnit(dSrc[2] = 11);
+         assert(dSrc[2] = 11);
       }
       //   iaFront
       // ia = 0    1    2 
