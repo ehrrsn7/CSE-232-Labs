@@ -44,10 +44,10 @@ public:
    unordered_set()
    {
    }
-   unordered_set(unordered_set&  rhs) 
+   unordered_set(unordered_set &  rhs) 
    {
    }
-   unordered_set(unordered_set&& rhs) 
+   unordered_set(unordered_set && rhs) 
    {
    }
    template <class Iterator>
@@ -58,19 +58,19 @@ public:
    //
    // Assign
    //
-   unordered_set& operator=(unordered_set& rhs)
+   unordered_set & operator=(unordered_set & rhs)
    {
       return *this;
    }
-   unordered_set& operator=(unordered_set&& rhs)
+   unordered_set & operator=(unordered_set && rhs)
    {
       return *this;
    }
-   unordered_set& operator=(const std::initializer_list<T>& il)
+   unordered_set & operator=(const std::initializer_list<T>& il)
    {
       return *this;
    }
-   void swap(unordered_set& rhs)
+   void swap(unordered_set & rhs)
    {
    }
 
@@ -99,16 +99,16 @@ public:
    //
    // Access
    //
-   size_t bucket(const T& t)
+   size_t bucket(const T & t)
    {
       return 99;
    }
-   iterator find(const T& t);
+   iterator find(const T & t);
 
    //   
    // Insert
    //
-   custom::pair<iterator, bool> insert(const T& t);
+   custom::pair<iterator, bool> insert(const T & t);
    void insert(const std::initializer_list<T> & il);
 
 
@@ -118,7 +118,7 @@ public:
    void clear() noexcept
    {
    }
-   iterator erase(const T& t);
+   iterator erase(const T & t);
 
    //
    // Status
@@ -196,7 +196,7 @@ public:
    // 
    // Access
    //
-   T& operator * ()
+   T & operator * ()
    {
       return *(new T());
    }
@@ -265,7 +265,7 @@ public:
    // 
    // Access
    //
-   T& operator * ()
+   T & operator * ()
    {
       return *(new T());
    }
@@ -292,8 +292,9 @@ private:
  * Remove one element from the unordered set
  ****************************************/
 template <typename T>
-typename unordered_set <T> ::iterator unordered_set<T>::erase(const T& t)
+typename unordered_set <T> ::iterator unordered_set<T>::erase(const T & t)
 {
+
    return iterator();
 }
 
@@ -302,10 +303,11 @@ typename unordered_set <T> ::iterator unordered_set<T>::erase(const T& t)
  * Insert one element into the hash
  ****************************************/
 template <typename T>
-custom::pair<typename custom::unordered_set<T>::iterator, bool> unordered_set<T>::insert(const T& t)
+custom::pair<typename custom::unordered_set<T>::iterator, bool> unordered_set<T>::insert(const T & t)
 {
    return custom::pair<custom::unordered_set<T>::iterator, bool>(iterator(), true);
 }
+
 template <typename T>
 void unordered_set<T>::insert(const std::initializer_list<T> & il)
 {
@@ -316,7 +318,7 @@ void unordered_set<T>::insert(const std::initializer_list<T> & il)
  * Find an element in an unordered set
  ****************************************/
 template <typename T>
-typename unordered_set <T> ::iterator unordered_set<T>::find(const T& t)
+typename unordered_set <T> ::iterator unordered_set<T>::find(const T & t)
 {
    return iterator();
 }

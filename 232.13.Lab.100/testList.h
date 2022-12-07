@@ -14,7 +14,6 @@
 #include "list.h"
 #include <list>
 #include "unitTest.h"
-
 #include <vector>
 #include <cassert>
 #include <memory>
@@ -63,6 +62,7 @@ public:
       test_iterator_dereference_update();
 
       // Access
+      test_find_standard();
       test_front_empty();
       test_front_standardRead();
       test_front_standardWrite();
@@ -222,8 +222,6 @@ public:
       // verify
    }
 
-
-
    /***************************************
     * COPY CONSTRUCTOR
     ***************************************/
@@ -268,6 +266,20 @@ public:
       // teardown
       teardownStandardFixture(lSrc);
       teardownStandardFixture(lDest);
+   }
+
+   void test_find_standard() {
+      // setup
+      //    +----+   +----+   +----+
+      //    | 11 | - | 26 | - | 31 |
+      //    +----+   +----+   +----+  
+      custom::list<int> l;
+      setupStandardFixture(l);
+      // exercise
+      custom::list<int>::iterator it = l.find(26);
+      // verify
+      assertStandardFixture(l);
+      assert(26 == *it);
    }
 
    /***************************************
