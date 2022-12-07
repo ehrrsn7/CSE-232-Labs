@@ -41,18 +41,17 @@ public:
    //
    // Construct
    //
-   unordered_set()
-   {
-   }
-   unordered_set(unordered_set &  rhs) 
-   {
-   }
-   unordered_set(unordered_set && rhs) 
-   {
-   }
+   unordered_set() : numElements(0) { }
+   
+   unordered_set(unordered_set & rhs) : buckets(rhs.buckets), numElements(rhs.numElements) { }
+   
+   unordered_set(unordered_set && rhs) : buckets(std::move(rhs.buckets)), numElements(std::move(rhs.numElements)) { }
+   
    template <class Iterator>
    unordered_set(Iterator first, Iterator last)
    {
+      for (auto it = first; it != last; it++)
+         insert(*it);
    }
 
    //
@@ -60,18 +59,29 @@ public:
    //
    unordered_set & operator=(unordered_set & rhs)
    {
+      for (size_t i = 0; i < 10; i++)
+         buckets[i] = rhs.buckets[i];
+      numElements = rhs.numElements;
       return *this;
    }
    unordered_set & operator=(unordered_set && rhs)
    {
+      // Because we are using the 100 level solution
+      for (size_t i = 0; i < 10; i++)
+         buckets[i] = std::move(rhs.buckets[i]);
+      numElements = std::move(rhs.numElements);
       return *this;
    }
    unordered_set & operator=(const std::initializer_list<T>& il)
    {
+      for (auto & t : il)
+         insert(t);
       return *this;
    }
    void swap(unordered_set & rhs)
    {
+      std::swap(buckets, rhs.buckets);
+      std::swap(numElements, rhs.numElements);
    }
 
    // 
