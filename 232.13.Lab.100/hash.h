@@ -14,7 +14,9 @@
  *        unordered_set           : A class that represents a hash
  *        unordered_set::iterator : An interator through hash
  * Author
- *    <your names here>
+ *    Carol Mercau
+ *    Elijah Harrison
+ *    Hunter 
  ************************************************************************/
 
 #pragma once
@@ -41,19 +43,11 @@ public:
    //
    // Construct
    //
-   unordered_set()
-   {
-   }
-   unordered_set(unordered_set &  rhs) 
-   {
-   }
-   unordered_set(unordered_set && rhs) 
-   {
-   }
+   unordered_set()                     { numElements = 0; }
+   unordered_set(unordered_set &  rhs) : unordered_set() { *this = rhs;     }
+   unordered_set(unordered_set&& rhs) : unordered_set() { *this = std::move(rhs); } // ?
    template <class Iterator>
-   unordered_set(Iterator first, Iterator last)
-   {
-   }
+   unordered_set(Iterator first, Iterator last) { } // ?
 
    //
    // Assign
@@ -320,6 +314,19 @@ void unordered_set<T>::insert(const std::initializer_list<T> & il)
 template <typename T>
 typename unordered_set <T> ::iterator unordered_set<T>::find(const T & t)
 {
+   /* unordered_set.find(element)
+      Identify the bucket number corresponding to the element.
+      iBucket <- bucket(element)
+
+      // Get a list iterator to the element using the list’s find() method.
+      itList <- buckets[iBucket].find(element)
+
+      // Create an iterator to return.
+      IF itList != buckets[iBucket].end()
+        RETURN iterator(buckets.end(), itVector(buckets, iBucket), itList)
+      ELSE
+        RETURN end()
+      */
    return iterator();
 }
 
