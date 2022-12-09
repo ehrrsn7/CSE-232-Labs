@@ -95,6 +95,7 @@ public:
    //
    size_t bucket(const T & t)
    {
+      // RETURN hash(element) % bucket_count()
       return 99;
    }
    iterator find(const T & t);
@@ -123,7 +124,7 @@ public:
    }
    bool empty() const 
    { 
-      return false;
+      return !(size());
    }
    size_t bucket_count() const 
    { 
