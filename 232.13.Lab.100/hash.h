@@ -131,7 +131,7 @@ public:
    }
    size_t bucket_size(size_t i) const
    {
-      return buckets->size();
+      return buckets[i].size();
    }
 
 private:
