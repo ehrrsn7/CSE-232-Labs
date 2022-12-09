@@ -16,7 +16,7 @@
  * Author
  *    Carol Mercau
  *    Elijah Harrison
- *    Hunter 
+ *    Hunter Powell
  ************************************************************************/
 
 #pragma once
@@ -119,7 +119,7 @@ public:
    //
    size_t size() const 
    { 
-      return 99;
+      return numElements;
    }
    bool empty() const 
    { 
@@ -131,7 +131,7 @@ public:
    }
    size_t bucket_size(size_t i) const
    {
-      return 99;
+      return buckets->size();
    }
 
 private:
@@ -347,6 +347,16 @@ typename unordered_set <T> ::iterator & unordered_set<T>::iterator::operator ++ 
 template <typename T>
 void swap(unordered_set<T>& lhs, unordered_set<T>& rhs)
 {
+    /*unordered_set<T> temp;
+    temp = &lhs;
+    &lhs = &rhs;
+    &rhs = &temp;*/
+
+
+    /*unordered_set.swap(rhs)
+        swap(numElements, rhs.numElements)
+        swap(maxLoadFactor, rhs.maxLoadFactor)
+        swap(buckets, rhs.buckets)*/
 }
 
 }
