@@ -51,7 +51,7 @@ public:
    list(list <T> & rhs)                       : list() { *this = rhs; }
    list(list <T> && rhs)                      : list() { *this = std::move(rhs); }
    list(const std::initializer_list<T> & il)  : list() { *this = il; }
-   ~list() { }
+  ~list() { }
    template <class Iterator>
    list(Iterator first, Iterator last);
 
@@ -129,7 +129,7 @@ public:
    Node()               : pNext(nullptr), pPrev(nullptr) { }
    Node(const T & data) : pNext(nullptr), pPrev(nullptr), data(data) { }
    Node(T && data)      : pNext(nullptr), pPrev(nullptr), data(std::move(data)) { }
-   ~Node() { }
+  ~Node() { }
 
    //
    // Data
@@ -360,7 +360,7 @@ list <T> & list <T> :: operator = (list <T> & rhs)
       // sever ties with the list assigned thus far
       else
             prev->pNext = nullptr;
-
+      
       // loop through the extraneous nodes and delete them using prev
       while (tmp->pNext)
       {
@@ -544,9 +544,8 @@ T & list <T> ::back()
 template <typename T>
 typename list<T>::iterator list<T>::find(const T & data)
 {
-   auto it = begin();
-   while (it != end())
-      if (data == *it++)
+   for (auto it = begin(); it != end(); it++)
+      if (data == *it)
          return it;
    return end();
 }

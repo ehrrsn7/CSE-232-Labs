@@ -16,7 +16,6 @@
 #undef assertStandardFixture
 #undef assertEmptyFixture
 
-
 #define assertUnit(condition)     assertUnitParameters(condition, #condition, __LINE__, __FUNCTION__)
 #define assertIndirect(condition) assertUnitParametersIndirect(condition, #condition, line, function, __LINE__, __FUNCTION__)
 #define assertComplexFixture(x)   assertComplexFixtureParameters( x, __LINE__, __FUNCTION__)

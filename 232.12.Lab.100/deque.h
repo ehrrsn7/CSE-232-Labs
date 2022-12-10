@@ -23,6 +23,9 @@
 
 #include <cassert> // Debug stuff
 
+#include <iostream>
+using std::cout, std::endl;
+
 class TestDeque; // forward declaration for TestDeque unit test class
 
 namespace custom
@@ -44,11 +47,11 @@ class deque
    friend class ::TestDeque; // give unit tests access to the privates
 public:
 
-   // 
+   //
    // Construct
    //
    deque() : data(nullptr), numCapacity(0), numElements(0), iaFront(0) { }
-   deque(const deque<T> & rhs) { *this = rhs; }
+   deque(const deque<T> & rhs) : deque() { *this = rhs; }
    deque(size_t); // fill constructor
   ~deque() { }
 
@@ -74,7 +77,7 @@ public:
    const T & back() const;
          T & back();
 
-   // 
+   //
    // Insert
    //
    void push_front(const T & t);
@@ -93,7 +96,7 @@ public:
       numElements = 0;
    }
 
-   // 
+   //
    // Status
    //
    size_t size() const { return numElements; }
@@ -115,6 +118,8 @@ private:
    // return value which is within 0 <= ia < numCapacity
    int iaWrap(int ia) const
    {
+      assert (numCapacity);
+
       // ia could be negative, and the % operator doesn't handle making it positive
       while (ia < 0)
          ia += numCapacity;
@@ -166,13 +171,13 @@ public:
    bool operator == (const iterator & rhs) const { return *this == rhs; }
    bool operator != (const iterator & rhs) const { return *this != rhs; }
 
-   // 
+   //
    // Access
    //
    const T & operator * () const { return (*pDeque)[id]; }
          T & operator * ()       { return (*pDeque)[id]; }
 
-   // 
+   //
    // Arithmetic
    //
    int operator - (iterator rhs) const { return id - rhs.id; }
@@ -221,7 +226,7 @@ private:
  * DEQUE : CONSTRUCTOR - fill
  ***************************************************/
 template <class T>
-deque<T>::deque(size_t newCapacity) 
+deque<T>::deque(size_t newCapacity)
    : data(nullptr), numCapacity(newCapacity), numElements(newCapacity), iaFront(0)
 {
    // allocate
@@ -238,24 +243,24 @@ deque<T>::deque(size_t newCapacity)
 template <class T>
 deque<T> & deque<T>::operator = (const deque<T> & rhs)
 {
-   numElements = rhs.numElements;
-   iaFront = 0;
-   int rhsI = rhs.iaFront;
    if (numCapacity < rhs.numCapacity)
    {
-      numCapacity = rhs.numCapacity;
-      data = new T[numCapacity];
+      // reallocate this.data with size rhs.numCapacity
+      data = new T[rhs.numCapacity];
       for (size_t i = 0; i < rhs.numCapacity; i++)
-      {
-         if (rhsI >= numCapacity)
-            rhsI = 0;
-         data[i] = rhs.data[rhsI];
-         rhsI++;
-      }
-
+         data[i] = rhs.data[i];
+      
+      // set vars
+      numCapacity = rhs.numCapacity;
    }
+   
    else
       data = rhs.data;
+   
+   // set vars
+   numElements = rhs.numElements;
+   iaFront = rhs.iaFront;
+
    return *this;
 }
 
@@ -264,7 +269,7 @@ deque<T> & deque<T>::operator = (const deque<T> & rhs)
  * Fetch the item that is at the end of the deque
  *************************************************/
 template <class T>
-const T & deque<T>::back() const 
+const T & deque<T>::back() const
 {
    assert (numElements && numCapacity);
    return data[iaFromID(numElements - 1)];
@@ -296,7 +301,7 @@ void deque<T>::pop_front()
  * DEQUE : PUSH_BACK
  ******************************************************/
 template <class T>
-void deque<T>::push_back(const T & t) 
+void deque<T>::push_back(const T & t)
 {
    // reallocate
    if (numElements == numCapacity)
@@ -310,7 +315,7 @@ void deque<T>::push_back(const T & t)
  * DEQUE : PUSH_FRONT
  ******************************************************/
 template <class T>
-void deque<T>::push_front(const T & t) 
+void deque<T>::push_front(const T & t)
 {
    // reallocate
    if (numElements == numCapacity)
