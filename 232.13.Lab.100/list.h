@@ -51,7 +51,7 @@ public:
    list(list <T> & rhs)                       : list() { *this = rhs; }
    list(list <T> && rhs)                      : list() { *this = std::move(rhs); }
    list(const std::initializer_list<T> & il)  : list() { *this = il; }
-   ~list() { }
+  ~list() { }
    template <class Iterator>
    list(Iterator first, Iterator last);
 
@@ -544,9 +544,8 @@ T & list <T> ::back()
 template <typename T>
 typename list<T>::iterator list<T>::find(const T & data)
 {
-   auto it = begin();
-   while (it != end())
-      if (data == *it++)
+   for (auto it = begin(); it != end(); it++)
+      if (data == *it)
          return it;
    return end();
 }
