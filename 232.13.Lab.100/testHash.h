@@ -475,6 +475,7 @@ public:
       //      h[8] -->
       //      h[9] -->
       assertEmptyFixture(usSrc);
+      assert(usSrc.empty());
       //      h[0] -->
       //      h[1] --> 31
       //      h[2] -->
@@ -486,6 +487,7 @@ public:
       //      h[8] -->
       //      h[9] --> 59 49
       assertStandardFixture(usDes);
+      assert(!usDes.empty());
       // teardown
    }
    
@@ -867,8 +869,11 @@ public:
       it = us.begin();
       // verify
       assertUnit(it.pBucket == us.buckets + 1);
+      assert(it.pBucket == us.buckets + 1);
       assertUnit(it.pBucketEnd == us.buckets + 10);
+      assert(it.pBucketEnd == us.buckets + 10);
       assertUnit(it.itList == us.buckets[1].begin());
+      assert(it.itList == us.buckets[1].begin());
       assertStandardFixture(us);
       // teardown
    }

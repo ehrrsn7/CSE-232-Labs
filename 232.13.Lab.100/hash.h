@@ -56,6 +56,7 @@ public:
       reserve(num);
       for (size_t i = 0; i < num; i++)
          insert(t);
+      assert(numElements == num);
    }
 
    //
@@ -71,7 +72,9 @@ public:
    
    unordered_set & operator = (unordered_set && rhs)
    {
-      numElements = std::move(rhs.numElements);
+      // numElements = std::move(rhs.numElements);
+      numElements = 0;
+      std::swap(numElements, rhs.numElements);
       for (size_t i = 0; i < 10; i++)
          buckets[i] = std::move(rhs.buckets[i]);
       return *this;
@@ -100,7 +103,7 @@ public:
    class local_iterator;
    
    iterator begin();
-   iterator end() { return iterator(&buckets[9], &buckets[9], buckets[0].end()); }
+   iterator end() { return iterator(&buckets[10], &buckets[10], buckets[0].end()); }
 
    local_iterator begin(size_t iBucket) { return local_iterator(buckets[iBucket].begin()); }
    local_iterator end(size_t iBucket)   { return local_iterator(buckets[iBucket].end()); }
@@ -143,6 +146,7 @@ public:
       auto it = begin();
       while (it != end())
          it = erase(*it);
+      assert(!numElements);
    }
    
    iterator erase(const T & t);
@@ -198,29 +202,8 @@ public:
    //
    // Compare
    //
-   bool operator == (const iterator & rhs) const
-   {
-      return itList == rhs.itList;
-      
-      // cooler code hehe:
-      // return true if pBucket, pBucketEnd AND itList match
-      bool pBucketMatch = (pBucket == rhs.pBucket);
-      bool pBucketEndMatch = (pBucketEnd == rhs.pBucketEnd);
-      bool itListMatch = (itList == rhs.itList);
-      return pBucketMatch && pBucketEndMatch && itListMatch;
-   }
-
-   bool operator != (const iterator & rhs) const 
-   {
-      return itList != rhs.itList;
-      
-      // cooler code hehe:
-      // return false if either pBucket, pBucketEnd OR itList match
-      bool pBucketMatch = (pBucket == rhs.pBucket);
-      bool pBucketEndMatch = (pBucketEnd == rhs.pBucketEnd);
-      bool itListMatch = (itList == rhs.itList);
-      return !(pBucketMatch || pBucketEndMatch || itListMatch);
-   }
+   bool operator == (const iterator & rhs) const { return itList == rhs.itList; }
+   bool operator != (const iterator & rhs) const { return itList != rhs.itList; }
    
    // 
    // Access
@@ -231,6 +214,7 @@ public:
    // Arithmetic
    //
    iterator & operator ++ ();
+   
    iterator operator ++ (int postfix)
    {
       auto tmp = *this;
@@ -358,7 +342,7 @@ custom::pair<typename custom::unordered_set<T>::iterator, bool> unordered_set<T>
    // return the results
    return ReturnPair(iterator( // iterator pointing to new element
       &buckets[iBucket],       // list<T>* pBucket
-      &buckets[9],             // list<T>* pBucketEnd
+      &buckets[10],            // list<T>* pBucketEnd
       buckets[iBucket].begin() // list<T>::iterator itList
    ), true /* did insert */);
 }
@@ -374,7 +358,7 @@ typename custom::unordered_set<T>::iterator custom::unordered_set<T>::begin()
          // return begin() from the first non-empty bucket
          return iterator(
             &buckets[i],       // list<T>* pBucket
-            &buckets[9],       // list<T>* pBucketEnd
+            &buckets[10],       // list<T>* pBucketEnd
             buckets[i].begin() // list<T>::iterator itList
          );
       }
@@ -398,7 +382,7 @@ typename unordered_set <T> ::iterator unordered_set<T>::find(const T & t)
    auto it = pBucket->find(t);
    if (it != pBucket->end())
    {
-      auto pBucketEnd = &buckets[bucket_count() - 1];
+      auto pBucketEnd = &buckets[bucket_count()];
       return iterator(pBucket, pBucketEnd, it);
    }
    
