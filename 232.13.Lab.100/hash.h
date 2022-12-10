@@ -49,7 +49,7 @@ public:
    unordered_set(const std::initializer_list<T>& il)  { *this = il; }
    
    template <class Iterator>
-   unordered_set(Iterator first, Iterator last) { insert(first, last); }
+   unordered_set(Iterator first, Iterator last) : numElements(0) { insert(first, last); }
    
    unordered_set(const T & t, size_t num)
    {
@@ -145,7 +145,9 @@ public:
    {
       auto it = begin();
       while (it != end())
+      {
          it = erase(*it);
+      }
       assert(!numElements);
    }
    
@@ -303,7 +305,7 @@ typename unordered_set <T> ::iterator unordered_set<T>::erase(const T & t)
    
    // determine the return value
    auto itReturn = itErase;
-   itReturn++;
+   ++itReturn;
    
    // erase the element from the bucket
    itErase.pBucket->erase(itErase.itList);
@@ -343,7 +345,7 @@ custom::pair<typename custom::unordered_set<T>::iterator, bool> unordered_set<T>
    return ReturnPair(iterator( // iterator pointing to new element
       &buckets[iBucket],       // list<T>* pBucket
       &buckets[10],            // list<T>* pBucketEnd
-      buckets[iBucket].begin() // list<T>::iterator itList
+      buckets[iBucket].find(t) // list<T>::iterator itList
    ), true /* did insert */);
 }
 

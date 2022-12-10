@@ -20,8 +20,6 @@
 #include <functional>
 #include <vector>
 
-using std::cout;
-using std::endl;
 
 // Keep our hash simple without any fancy stuff
 #ifndef __APPLE__
@@ -54,7 +52,7 @@ public:
 
       // Assign
       test_assign_emptyEmpty();
-      // test_assign_emptyStandard(); // idk why this error fires 💢
+      test_assign_emptyStandard();
       test_assign_standardEmpty();
       test_assignMove_emptyEmpty();
       test_assignMove_emptyStandard();
