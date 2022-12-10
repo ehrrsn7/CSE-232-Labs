@@ -362,14 +362,16 @@ list <T> & list <T> :: operator = (list <T> & rhs)
             prev->pNext = nullptr;
       
       // loop through the extraneous nodes and delete them using prev
-      while (tmp->pNext)
-      {
-         delete prev;
-         prev = nullptr;
-         prev = tmp;
-         tmp = tmp->pNext;
-         delete prev;
-         prev = nullptr;
+      if (tmp) {
+         while (tmp->pNext)
+         {
+            delete prev;
+            prev = nullptr;
+            prev = tmp;
+            tmp = tmp->pNext;
+            delete prev;
+            prev = nullptr;
+         }
       }
 
       // the last one is the only one left over
