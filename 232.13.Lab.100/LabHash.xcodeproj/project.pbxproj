@@ -23,17 +23,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C169A0EB2654462F00C3E18D /* unitTest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; };
-		C169A0ED2654463000C3E18D /* testPair.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testPair.h; sourceTree = "<group>"; };
-		C169A0EE2654463000C3E18D /* testList.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testList.h; sourceTree = "<group>"; };
-		C169A0EF2654463000C3E18D /* testSpy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; };
-		C169A0F02654463000C3E18D /* pair.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pair.h; sourceTree = "<group>"; };
-		C169A0F22654463000C3E18D /* spy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; };
+		C169A0EB2654462F00C3E18D /* unitTest.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = unitTest.h; sourceTree = "<group>"; tabWidth = 3; };
+		C169A0ED2654463000C3E18D /* testPair.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testPair.h; sourceTree = "<group>"; tabWidth = 3; };
+		C169A0EE2654463000C3E18D /* testList.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testList.h; sourceTree = "<group>"; tabWidth = 3; };
+		C169A0EF2654463000C3E18D /* testSpy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testSpy.h; sourceTree = "<group>"; tabWidth = 3; };
+		C169A0F02654463000C3E18D /* pair.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = pair.h; sourceTree = "<group>"; tabWidth = 3; };
+		C169A0F22654463000C3E18D /* spy.h */ = {isa = PBXFileReference; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = spy.h; sourceTree = "<group>"; tabWidth = 3; };
 		C1EF73AA256717F0003DA99A /* Lab12 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lab12; sourceTree = BUILT_PRODUCTS_DIR; };
-		C1EF73B625671843003DA99A /* testHash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testHash.h; sourceTree = "<group>"; };
-		C1EF73B725671845003DA99A /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
-		C1EF73B825671845003DA99A /* testHash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = testHash.cpp; sourceTree = "<group>"; };
-		C1EF73B925671847003DA99A /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; };
+		C1EF73B625671843003DA99A /* testHash.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = testHash.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF73B725671845003DA99A /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF73B825671845003DA99A /* testHash.cpp */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.cpp.cpp; path = testHash.cpp; sourceTree = "<group>"; tabWidth = 3; };
+		C1EF73B925671847003DA99A /* hash.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 3; lastKnownFileType = sourcecode.c.h; path = hash.h; sourceTree = "<group>"; tabWidth = 3; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,16 +50,16 @@
 		C1EF73A1256717F0003DA99A = {
 			isa = PBXGroup;
 			children = (
+				C1EF73B925671847003DA99A /* hash.h */,
+				C1EF73B725671845003DA99A /* list.h */,
 				C169A0F02654463000C3E18D /* pair.h */,
 				C169A0F22654463000C3E18D /* spy.h */,
+				C1EF73B825671845003DA99A /* testHash.cpp */,
+				C1EF73B625671843003DA99A /* testHash.h */,
 				C169A0EE2654463000C3E18D /* testList.h */,
 				C169A0ED2654463000C3E18D /* testPair.h */,
 				C169A0EF2654463000C3E18D /* testSpy.h */,
 				C169A0EB2654462F00C3E18D /* unitTest.h */,
-				C1EF73B925671847003DA99A /* hash.h */,
-				C1EF73B725671845003DA99A /* list.h */,
-				C1EF73B825671845003DA99A /* testHash.cpp */,
-				C1EF73B625671843003DA99A /* testHash.h */,
 				C1EF73AB256717F0003DA99A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -98,7 +98,7 @@
 		C1EF73A2256717F0003DA99A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					C1EF73A9256717F0003DA99A = {
 						CreatedOnToolsVersion = 12.2;
@@ -169,6 +169,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -228,6 +229,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -251,6 +253,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -260,6 +263,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
+				DEAD_CODE_STRIPPING = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

@@ -129,7 +129,7 @@ public:
    Node()               : pNext(nullptr), pPrev(nullptr) { }
    Node(const T & data) : pNext(nullptr), pPrev(nullptr), data(data) { }
    Node(T && data)      : pNext(nullptr), pPrev(nullptr), data(std::move(data)) { }
-   ~Node() { }
+  ~Node() { }
 
    //
    // Data
@@ -360,7 +360,7 @@ list <T> & list <T> :: operator = (list <T> & rhs)
       // sever ties with the list assigned thus far
       else
             prev->pNext = nullptr;
-
+      
       // loop through the extraneous nodes and delete them using prev
       while (tmp->pNext)
       {
