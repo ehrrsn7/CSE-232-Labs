@@ -1,5 +1,5 @@
 # CSE 232 - Labs
-## BYU-Idaho Course Work
+## BYU-Idaho Course: Implementing C++ Standard Library containers.
 
 w01 (individual) - custom::array implementation
 
